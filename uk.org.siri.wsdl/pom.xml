@@ -1,0 +1,94 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>siri</groupId>
+		<artifactId>siri_lite</artifactId>
+		<version>1.0.0</version>
+	</parent>
+	<artifactId>uk.org.siri.wsdl</artifactId>
+	<packaging>ejb</packaging>
+	<properties>
+		<wsdldir>${basedir}/../uk.org.siri.siri/src/main/resources/wsdl</wsdldir>
+	</properties>
+	<dependencies>
+
+		<!-- Default Dependencies -->
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
+			<scope>provided</scope>
+		</dependency>
+
+		<!-- Other Dependencies -->
+		<dependency>
+			<groupId>javax.xml.bind</groupId>
+			<artifactId>jaxb-api</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>javax.xml.ws</groupId>
+			<artifactId>jaxws-api</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>commons-pool</groupId>
+			<artifactId>commons-pool</artifactId>
+			<scope>provided</scope>
+		</dependency>
+
+		<!-- Siri Dependencies -->
+		<dependency>
+			<groupId>siri</groupId>
+			<artifactId>uk.org.siri.siri</artifactId>
+			<version>1.0.0</version>
+			<scope>provided</scope>
+		</dependency>
+
+	</dependencies>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.jvnet.jax-ws-commons</groupId>
+				<artifactId>jaxws-maven-plugin</artifactId>
+				<version>2.3</version>
+				<executions>
+					<execution>
+						<id>generate-sources</id>
+						<phase>generate-sources</phase>
+
+						<goals>
+							<goal>wsimport</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<bindingDirectory>${wsdldir}</bindingDirectory>
+					<bindingFiles>
+						<bindingFile>bindings.xml</bindingFile>
+					</bindingFiles>
+					<wsdlDirectory>${wsdldir}</wsdlDirectory>
+					<wsdlFiles>
+					<wsdlFile>siri_wsProducer-Document.wsdl</wsdlFile>
+					</wsdlFiles>
+					<vmArgs>
+						<vmArg>-Djavax.xml.accessExternalDTD=all</vmArg>
+						<vmArg>-Djavax.xml.accessExternalSchema=all</vmArg>
+					</vmArgs>
+					<schemaDirectory>${wsdldir}</schemaDirectory>
+					<schemaFiles>siri.xsd,siri-FR-IDF-Extensions-2.4.xsd</schemaFiles>
+					<xjcArgs>
+						<xjcArg>-npa</xjcArg>
+						<xjcArg>-b</xjcArg>
+						<xjcArg>${basedir}/../uk.org.siri.siri/siri.episode</xjcArg>
+					</xjcArgs>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+</project>

@@ -1,0 +1,14 @@
+<bindings xmlns:jaxws="http://java.sun.com/xml/ns/jaxws"
+	xmlns:xsi="http://www.w3.org/2000/10/XMLSchema-instance" 
+	xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	xmlns:xjc="http://java.sun.com/xml/ns/jaxb/xjc" 
+	xmlns="http://java.sun.com/xml/ns/jaxb"
+	version="2.1">
+
+	<globalBindings generateIsSetMethod="false"
+		generateMixedExtensions="true">
+<!-- 		<xjc:serializable uid="1" /> -->
+	</globalBindings>
+	
+</bindings>
+

@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2006 sp2 U (http://www.altova.com) by christophe 
+	duquesne (Dryade SARL) -->
+<xsd:schema xmlns="http://www.siri.org.uk/siri" xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	targetNamespace="http://www.siri.org.uk/siri" elementFormDefault="qualified"
+	attributeFormDefault="unqualified" version="2.0" id="siri">
+	<xsd:annotation>
+		<xsd:appinfo>
+			<Metadata xmlns="http://www.govtalk.gov.uk/CM/gms-xs">
+				<Aggregation>main schema</Aggregation>
+				<Audience>e-service developers</Audience>
+				<Contributor> Cen TC278 WG3 SG7 Team</Contributor>
+				<Coverage>Europe</Coverage>
+				<Creator>Version 1 Cen TC278 WG3 SG7 Editor Christophe Duquesne
+					Dryade mailto:christophe.duquesne@dryade.net
+				</Creator>
+				<Date>
+					<Created>2007-01-22</Created>
+				</Date>
+				<Date>
+					<Modified>2007-01-22</Modified>
+				</Date>
+				<Description>
+					<p>SIRI is a European CEN standard for the exchange of Public
+						Transport real time information.</p>
+					<p>This sub-schema describes the General Message Service messages
+						for the SIR Local Agreement in Ile-de_France.</p>
+				</Description>
+				<Format>
+					<MediaType>text/xml</MediaType>
+					<Syntax>http://www.w3.org/2001/XMLSchema</Syntax>
+					<Description>XML schema, W3C Recommendation 2001</Description>
+				</Format>
+				<Identifier>{http://www.siri.org.uk/schemas/1.0}sir_facilityMonitoring_service.xsd</Identifier>
+				<Language>[ISO 639-2/B] ENG</Language>
+				<Publisher>CEN - Add POSTAL ADDRESS </Publisher>
+				<Relation>
+					<Requires>http://www.siri.org.uk/schemas/1.0/ref/siri_commons-v1.1.xsd</Requires>
+					<Requires>http://www.siri.org.uk/schemas/1.0/ref/siri_generalMessage_service-v1.1.xsd</Requires>
+				</Relation>
+				<Rights>
+					Unclassified
+					<Copyright>CEN, VDV, RTIG 2004, 2005</Copyright>
+				</Rights>
+				<Source>
+					<ul>
+						<li>Derived from the VDV, RTIG XML and Trident standards.</li>
+					</ul>
+				</Source>
+				<Status>Version 1 </Status>
+				<Subject>
+					<Category>Arts, recreation and travel, Tourism, Travel (tourism),
+						Transport,
+						Air transport, Airports,
+						Ports and maritime transport,
+						Ferries (marine),
+						Public transport, Bus services, Coach services,
+						Bus stops and stations,
+						Rail transport, Railway stations and track,
+						Train services,
+						Underground trains,
+						Business and industry,
+						Transport, Air transport , Ports and maritime
+						transport, Public
+						transport,
+						Rail transport, Roads and road transport
+					</Category>
+					<Project>Cen TC278 WG3 SG7</Project>
+				</Subject>
+				<Title>SIRI XML schema. Service Interface for Real Time Information
+					relating to Public Transport Operations. Message definition for
+					Ile-de-France</Title>
+				<Type>Standard</Type>
+			</Metadata>
+		</xsd:appinfo>
+	</xsd:annotation>
+	<!-- ======================================================================= -->
+	<xsd:include schemaLocation="siri.xsd" />
+	<!-- ==Element definition ======================================================= -->
+	<xsd:element name="IDFMessage" type="IDFMessageStructure">
+		<xsd:annotation>
+			<xsd:documentation>Message (for General Message Service) defined for
+				the the STIF/IDF Local Agreement. This element is intended to be
+				used in the "Content" field (type "any") in the
+				InfoMessageStructure.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<!-- =Type definition =========================================================== -->
+	<xsd:simpleType name="IDFMessageTypeEnumeration">
+		<xsd:annotation>
+			<xsd:documentation>Values for IDF Message Type</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:NMTOKEN">
+			<xsd:enumeration value="shortMessage" />
+			<xsd:enumeration value="longMessage" />
+			<xsd:enumeration value="codedMessage" />
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:complexType name="IDFMessageStructure">
+		<xsd:annotation>
+			<xsd:documentation>Message (for General Message Service) defined for
+				the the STIF/IDF Local Agreement.
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="MessageType" type="IDFMessageTypeEnumeration">
+				<xsd:annotation>
+					<xsd:documentation>Type de message (long/short/coded)
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="MessageText" type="NaturalLanguageStringStructure">
+				<xsd:annotation>
+					<xsd:documentation>Text of the message itself</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="IDFLineSectionStructure">
+		<xsd:annotation>
+			<xsd:documentation>Description of a Line Section defined for the the
+				STIF/IDF Local Agreement.
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="FirstStop" type="StopPointRefStructure">
+				<xsd:annotation>
+					<xsd:documentation>Identifier of the first Stop Point of the line
+						section
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="LastStop" type="StopPointRefStructure">
+				<xsd:annotation>
+					<xsd:documentation>Identifier of the last Stop Point of the line
+						section
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element ref="LineRef" />
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="IDFGeneralMessageStructure">
+		<xsd:annotation>
+			<xsd:documentation>Message (for General Message Service) defined for
+				the the STIF/IDF Local Agreement.
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element ref="LineRef" minOccurs="0" maxOccurs="unbounded" />
+			<xsd:element ref="StopPointRef" minOccurs="0" maxOccurs="unbounded" />
+			<xsd:element ref="JourneyPatternRef" minOccurs="0"
+				maxOccurs="unbounded" />
+			<xsd:element name="RouteRef" type="RouteRefStructure"
+				minOccurs="0" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation>Reference to a Route</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="LineSection" type="IDFLineSectionStructure"
+				minOccurs="0" maxOccurs="unbounded" />
+			<xsd:element name="Message" type="IDFMessageStructure"
+				maxOccurs="unbounded" />
+		</xsd:sequence>
+	</xsd:complexType>
+	<!-- ======================================================================= -->
+	<!-- Filtre pour les requetes (adapte aux structures de message IDF) -->
+	<!-- Si plusieurs filitres sont demandés (plusieurs identifiants de ligne, 
+		L1, L2 par exemple), cela correspond a une demande de tous les message concernant 
+		la ligne L1 OU la ligne L2 (c'est bien un OU et non un ET) -->
+	<xsd:complexType name="IDFGeneralMessageRequestFilterStructure">
+		<xsd:annotation>
+			<xsd:documentation>Filter for General Message Service) defined for
+				the the STIF/IDF Local Agreement.
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:choice>
+			<xsd:element ref="LineRef" minOccurs="0" maxOccurs="unbounded" />
+			<xsd:element ref="StopPointRef" minOccurs="0" maxOccurs="unbounded" />
+			<xsd:element ref="JourneyPatternRef" minOccurs="0"
+				maxOccurs="unbounded" />
+			<xsd:element name="RouteRef" type="RouteRefStructure"
+				minOccurs="0" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation>Reference to a Route</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:choice>
+	</xsd:complexType>
+	<xsd:element name="IDFGeneralMessageRequestFilter" type="IDFGeneralMessageRequestFilterStructure">
+		<xsd:annotation>
+			<xsd:documentation>Filter Message (for General Message Service)
+				defined for the the STIF/IDF Local Agreement. This element is
+				intended to be used in the "Content" field (type "any") in the
+				InfoMessageStructure.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	<!-- ======================================================================= -->
+</xsd:schema>
