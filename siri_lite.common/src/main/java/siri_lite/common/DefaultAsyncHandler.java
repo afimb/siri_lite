@@ -32,7 +32,7 @@ public abstract class DefaultAsyncHandler<T> implements
 	protected Class<T> type;
 
 	@Setter
-	private SiriProducerDocServicesWrapper service;
+	private SiriProducerDocServices service;
 
 	@SuppressWarnings("unchecked")
 	public DefaultAsyncHandler(Configuration configuration,
@@ -56,7 +56,7 @@ public abstract class DefaultAsyncHandler<T> implements
 			SOAPBody soapBody = soapMessage.getSOAPBody();
 			Object value = service.unmarshal(soapBody.getFirstChild());
 			log.info(Color.CYAN + "[DSU] result : " + value + Color.NORMAL);
-			SiriProducerDocServicesFactory.getInstance().passivate(service);
+			SiriProducerDocServicesFactory.passivate(service);
 			if (value != null && type.isInstance(value)) {
 				try {
 					handleResponse((T) value);
@@ -70,13 +70,12 @@ public abstract class DefaultAsyncHandler<T> implements
 				log.error(e.getMessage(), e);
 				payload = Response.status(Status.INTERNAL_SERVER_ERROR).build();
 				peer.resume(payload);
-				SiriProducerDocServicesFactory.getInstance().passivate(service);
+				SiriProducerDocServicesFactory.passivate(service);
 			} else {
 				log.error(e.getMessage(), e.getCause());
 				payload = Response.status(Status.SERVICE_UNAVAILABLE).build();
 				peer.resume(payload);
-				SiriProducerDocServicesFactory.getInstance()
-						.invalidate(service);
+				SiriProducerDocServicesFactory.invalidate(service);
 			}
 		}
 

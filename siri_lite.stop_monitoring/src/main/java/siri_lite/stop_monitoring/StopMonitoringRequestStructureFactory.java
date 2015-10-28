@@ -96,7 +96,7 @@ public class StopMonitoringRequestStructureFactory
 		// .getStopMonitoringDetailLevel());
 		// }
 
-		// MaximumNumberOfCallsOnwards 
+		// MaximumNumberOfCallsOnwards
 		if (parameters.getMaximumNumberOfCallsOnwards() != null) {
 			MaximumNumberOfCalls maximumNumberOfCalls = factory
 					.createStopMonitoringFilterStructureMaximumNumberOfCalls();

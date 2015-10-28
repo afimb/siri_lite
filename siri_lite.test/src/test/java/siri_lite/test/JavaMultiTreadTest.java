@@ -1,106 +1,90 @@
 package siri_lite.test;
 
-import java.io.File;
+import java.io.StringReader;
 import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.Future;
 
 import javax.jws.WebMethod;
 import javax.jws.WebParam;
 import javax.jws.WebService;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.datatype.DatatypeConfigurationException;
-import javax.xml.datatype.DatatypeFactory;
-import javax.xml.ws.Endpoint;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.core.Response;
+import javax.xml.bind.Unmarshaller;
+import javax.xml.datatype.XMLGregorianCalendar;
 import javax.xml.ws.Holder;
 import javax.xml.ws.RequestWrapper;
 import javax.xml.ws.ResponseWrapper;
 
-import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.extern.log4j.Log4j;
 
-import org.apache.log4j.BasicConfigurator;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-import org.jboss.arquillian.container.test.api.Deployment;
-import org.jboss.arquillian.testng.Arquillian;
-import org.jboss.shrinkwrap.api.ShrinkWrap;
-import org.jboss.shrinkwrap.api.spec.EnterpriseArchive;
+import org.apache.http.message.BasicNameValuePair;
+import org.jboss.arquillian.container.test.api.RunAsClient;
+import org.testng.Assert;
+import org.testng.annotations.Test;
 
-import siri_lite.common.Color;
 import siri_lite.common.XmlStructureFactory;
+import siri_lite.discovery.StopPointsDiscoveryParameters;
 import uk.org.siri.siri.ExtensionsStructure;
-import uk.org.siri.siri.ObjectFactory;
 import uk.org.siri.siri.OtherErrorStructure;
 import uk.org.siri.siri.ServiceDeliveryErrorConditionStructure;
+import uk.org.siri.siri.Siri;
 import uk.org.siri.siri.StopPointsDeliveryStructure;
 import uk.org.siri.siri.StopPointsDiscoveryRequestStructure;
 import uk.org.siri.wsdl.StopPointsDiscoveryError;
 
+@NoArgsConstructor
 @Log4j
-public abstract class AbstractUnit extends Arquillian {
+public class JavaMultiTreadTest extends AbstractUnit {
 
-	protected Endpoint endpoint;
+	@Test
+	@RunAsClient
+	public void test() throws Exception {
 
-	protected ObjectFactory factory = new ObjectFactory();
+		initialize();
 
-	protected static DatatypeFactory xmlFactory;
+		// invoke service
+		String URL = "http://localhost:8080/siri/2.0.0/stoppoints-discovery.xml";
+		List<BasicNameValuePair> parameters = new ArrayList<BasicNameValuePair>();
+		parameters.add(new BasicNameValuePair(
+				StopPointsDiscoveryParameters.REQUESTOR_REF, "REQUESTORREF"));
+		String url = Utils.buildURL(URL, parameters);
 
-	static {
-		try {
-			xmlFactory = DatatypeFactory.newInstance();
-		} catch (DatatypeConfigurationException ignored) {
+		Future<Response> r1 = ClientBuilder.newClient()
+				.target(url + "&MessageIdentifier=1").request().async().get();
+
+		Utils.sleep(200);
+		Future<Response> r2 = ClientBuilder.newClient()
+				.target(url + "&MessageIdentifier=2").request().async().get();
+		while (!(r1.isDone() && r2.isDone())) {
+			Utils.sleep(100);
 		}
+
+		XMLGregorianCalendar calendar1 = getResponseTimestamp(r1);
+		log.info("[DSU] calendar1 " + calendar1);
+
+		XMLGregorianCalendar calendar2 = getResponseTimestamp(r2);
+		log.info("[DSU] calendar2 " + calendar2);
+
+		// response test
+		Assert.assertTrue((calendar1.compare(calendar2) > 0));
+
+		dispose();
 	}
 
-	private static JAXBContext jaxbContext;
+	private XMLGregorianCalendar getResponseTimestamp(Future<Response> future)
+			throws Exception {
 
-	static {
-		try {
-			jaxbContext = JAXBContext.newInstance(
-					uk.org.siri.siri.ObjectFactory.class,
-					uk.org.siri.wsdl.siri.ObjectFactory.class,
-					uk.org.siri.wsdl.ObjectFactory.class);
-		} catch (JAXBException e) {
-			e.printStackTrace();
-		}
-	}
+		Response response = future.get();
+		String entity = response.readEntity(String.class);
+		Unmarshaller unmarshaller = getContext().createUnmarshaller();
+		Object object = unmarshaller.unmarshal(new StringReader(entity));
+		response.close();
 
-	public static JAXBContext getContext() {
-		return jaxbContext;
-	}
+		return ((Siri) object).getStopPointsDelivery().getResponseTimestamp();
 
-	public AbstractUnit() {
-		super();
-		BasicConfigurator.configure();
-		Logger.getRootLogger().setLevel(Level.INFO);
-	}
-
-	@Deployment(testable = false)
-	public static EnterpriseArchive createDeployment() {
-		final EnterpriseArchive result = ShrinkWrap.createFromZipFile(
-				EnterpriseArchive.class, new File(
-						"../siri/target/siri_lite.ear"));
-		return result;
-	}
-
-	@Getter
-	protected StopPointsDiscoveryRequestStructure stopPointsDiscoveryRequest;
-
-	protected void initialize() throws Exception {
-//		log.info(Color.YELLOW + "[DSU] ---------------> TEST : "
-//				+ this.getClass().getSimpleName() + Color.NORMAL);
-
-		Object implementor = createServer();
-		String address = "http://localhost:20080/siri";
-		endpoint = Endpoint.create(implementor);
-		endpoint.publish(address);
-	}
-
-	protected void dispose() throws Exception {
-		if (endpoint != null) {
-			endpoint.stop();
-		}
-		Utils.sleep(1000);
 	}
 
 	protected Object createServer() {
@@ -120,7 +104,11 @@ public abstract class AbstractUnit extends Arquillian {
 				@WebParam(name = "AnswerExtension", targetNamespace = "", mode = WebParam.Mode.OUT) Holder<ExtensionsStructure> answerExtension)
 				throws StopPointsDiscoveryError {
 
-			AbstractUnit.this.stopPointsDiscoveryRequest = request;
+			int value = Integer.parseInt(request.getMessageIdentifier()
+					.getValue());
+			if (value % 2 == 1) {
+				Utils.sleep(2000);
+			}
 
 			answer.value = factory.createStopPointsDeliveryStructure();
 			answerExtension.value = factory.createExtensionsStructure();
@@ -128,21 +116,23 @@ public abstract class AbstractUnit extends Arquillian {
 					.getTimestamp());
 			answer.value.setVersion(request.getVersion());
 			answer.value.setStatus(Boolean.FALSE);
-			ServiceDeliveryErrorConditionStructure error = createOtherErrorStructure("");
+
+			ServiceDeliveryErrorConditionStructure error = createOtherErrorStructure(
+					"MessageIdentifier = "
+							+ request.getMessageIdentifier().getValue(), value);
 			answer.value.setErrorCondition(error);
 		}
 
 		public ServiceDeliveryErrorConditionStructure createOtherErrorStructure(
-				String text) {
+				String text, Integer number) {
 			ServiceDeliveryErrorConditionStructure result = factory
 					.createServiceDeliveryErrorConditionStructure();
 			OtherErrorStructure error = factory.createOtherErrorStructure();
 			error.setErrorText(text);
-			error.setNumber(BigInteger.valueOf(0));
+			error.setNumber(BigInteger.valueOf(number));
 			result.setOtherError(error);
 
 			return result;
 		}
 	}
-
 }

@@ -8,11 +8,10 @@ import siri_lite.common.DefaultParameters;
 
 @Data
 public class LinesDiscoveryParameters extends DefaultParameters {
-	
 
 	@Override
 	public void configure(MultivaluedMap<String, String> properties)
 			throws ValidationException {
-		super.configure(properties);		
+		super.configure(properties);
 	}
 }

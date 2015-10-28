@@ -9,6 +9,7 @@ import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Response;
+import javax.xml.bind.Unmarshaller;
 
 import lombok.NoArgsConstructor;
 
@@ -64,6 +65,7 @@ public class StopPointsDiscoveryTest extends AbstractUnit {
 		WebTarget target = client.target(url);
 		Response response = target.request().get();
 		String value = response.readEntity(String.class);
+		Unmarshaller unmarshaller = getContext().createUnmarshaller();
 		Object object = unmarshaller.unmarshal(new StringReader(value));
 		response.close();
 

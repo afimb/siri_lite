@@ -1,14 +1,10 @@
 package siri_lite.common;
 
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Future;
 
-import javax.ws.rs.core.HttpHeaders;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
@@ -26,7 +22,6 @@ import javax.xml.ws.BindingProvider;
 import javax.xml.ws.Dispatch;
 import javax.xml.ws.Service;
 import javax.xml.ws.handler.Handler;
-import javax.xml.ws.handler.MessageContext;
 
 import lombok.extern.log4j.Log4j;
 
@@ -36,13 +31,12 @@ import org.w3c.dom.Node;
 import uk.org.siri.siri.ObjectFactory;
 
 @Log4j
-public class SiriProducerDocServicesWrapper extends Service {
+public class SiriProducerDocServices extends Service {
 
 	public static final String HTTP_PROXY_PORT = "http.proxyPort";
 	public static final String HTTP_PROXY_HOST = "http.proxyHost";
 	public static final String CONNECTION_TIMEOUT = "javax.xml.ws.client.connectionTimeout";
 	public static final String RECEIVE_TIMEOUT = "javax.xml.ws.client.receiveTimeout";
-
 	public static final URL wsdlLocation = ObjectFactory.class.getClassLoader()
 			.getResource("wsdl/siri_wsProducer-Document.wsdl");
 	public static final QName serviceQName = new QName(
@@ -50,24 +44,11 @@ public class SiriProducerDocServicesWrapper extends Service {
 	public static final QName portQName = new QName("http://wsdl.siri.org.uk",
 			"SiriWSPort");
 
-	private static final Configuration configuration = Configuration
-			.getInstance();
-	private static JAXBContext context;
-	static {
-		try {
-			context = JAXBContext.newInstance(
-					uk.org.siri.siri.ObjectFactory.class,
-					uk.org.siri.wsdl.siri.ObjectFactory.class,
-					uk.org.siri.wsdl.ObjectFactory.class);
-		} catch (JAXBException e) {
-			e.printStackTrace();
-		}
-	}
 	private Marshaller marshaller;
-	private Dispatch<SOAPMessage> dispatch;
 	private Unmarshaller unmarshaller;
+	private Dispatch<SOAPMessage> dispatch;
 
-	public SiriProducerDocServicesWrapper() throws JAXBException {
+	public SiriProducerDocServices() throws JAXBException {
 		super(wsdlLocation, serviceQName);
 		initialize();
 	}
@@ -102,8 +83,10 @@ public class SiriProducerDocServicesWrapper extends Service {
 
 	private void initialize() throws JAXBException {
 
-		marshaller = context.createMarshaller();
-		unmarshaller = context.createUnmarshaller();
+		Configuration configuration = Configuration.getInstance();
+		JAXBContext jaxbContext = SiriStructureFactory.getContext();
+		marshaller = jaxbContext.createMarshaller();
+		unmarshaller = jaxbContext.createUnmarshaller();
 
 		dispatch = createDispatch(portQName, SOAPMessage.class,
 				Service.Mode.MESSAGE);
@@ -112,7 +95,8 @@ public class SiriProducerDocServicesWrapper extends Service {
 				configuration.getProducerAddress());
 		context.put(CONNECTION_TIMEOUT, configuration.getTimeout().toString());
 		context.put(RECEIVE_TIMEOUT, configuration.getTimeout().toString());
-		context.put("org.jboss.ws.timeout", configuration.getTimeout().toString());
+		context.put("org.jboss.ws.timeout", configuration.getTimeout()
+				.toString());
 
 		if (configuration.getProxyHost() != null
 				&& !configuration.getProxyHost().isEmpty()

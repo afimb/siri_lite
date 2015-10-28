@@ -21,7 +21,6 @@ import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import siri_lite.common.SiriException;
 import siri_lite.common.SiriStructureFactory;
 import siri_lite.discovery.StopPointsDiscoveryParameters;
 import uk.org.siri.siri.ExtensionsStructure;
@@ -64,9 +63,6 @@ public class SoapFaultTest extends AbstractUnit {
 	@WebService(name = "SiriWS", targetNamespace = "http://wsdl.siri.org.uk")
 	public class Server {
 
-		public final String SERVICE_NOT_AVAILABLE = SiriException.ERROR_CODE.SERVICE_NOT_AVAILABLE_ERROR
-				.name();
-
 		@WebMethod(operationName = "StopPointsDiscovery", action = "StopPointsDiscovery")
 		@RequestWrapper(localName = "StopPointsDiscovery", targetNamespace = "http://wsdl.siri.org.uk", className = "uk.org.siri.wsdl.WsStopPointsDiscoveryStructure")
 		@ResponseWrapper(localName = "StopPointsDiscoveryResponse", targetNamespace = "http://wsdl.siri.org.uk", className = "uk.org.siri.wsdl.WsStopPointsDiscoveryAnswerStructure")
@@ -78,9 +74,9 @@ public class SoapFaultTest extends AbstractUnit {
 				throws StopPointsDiscoveryError {
 
 			throw new StopPointsDiscoveryError(
-					SERVICE_NOT_AVAILABLE,
+					"SERVICE_NOT_AVAILABLE",
 					SiriStructureFactory
-							.createServiceNotAvailableErrorConditionStructure(SERVICE_NOT_AVAILABLE));
+							.createOtherErrorConditionStructure("SoapFaultTest"));
 
 		}
 	}

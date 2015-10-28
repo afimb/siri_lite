@@ -30,7 +30,7 @@ public class JSONMarshallerTest extends AbstractUnit {
 		initialize();
 
 		// invoke service
-		String URL = "http://localhost:8080/siri/2.0.0/stoppoints-discovery.json";
+		String URL = "http://localhost:8080/siri/2.0.0/stoppoints-discovery";
 		List<BasicNameValuePair> parameters = new ArrayList<BasicNameValuePair>();
 		parameters.add(new BasicNameValuePair(
 				StopPointsDiscoveryParameters.REQUESTOR_REF, "REQUESTORREF"));
@@ -47,10 +47,8 @@ public class JSONMarshallerTest extends AbstractUnit {
 
 		// response test
 		Assert.assertEquals(response.getStatus(), 200);
-		Assert.assertEquals(
-				response.getHeaderString(HttpHeaders.CONTENT_TYPE),
+		Assert.assertEquals(response.getHeaderString(HttpHeaders.CONTENT_TYPE),
 				"application/json;charset=UTF-8");
-		// TODO unmarshall JSON
 
 		dispose();
 	}

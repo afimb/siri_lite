@@ -1,7 +1,5 @@
 package siri_lite.common;
 
-import lombok.ToString;
-
 public class Configuration {
 
 	public static final String PRODUCER_ADDRESS = "producer.address";

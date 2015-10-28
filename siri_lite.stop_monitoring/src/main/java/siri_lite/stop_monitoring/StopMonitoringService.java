@@ -1,5 +1,7 @@
 package siri_lite.stop_monitoring;
 
+import java.util.NoSuchElementException;
+
 import javax.ejb.Stateless;
 import javax.ws.rs.container.AsyncResponse;
 import javax.ws.rs.core.MultivaluedMap;
@@ -17,8 +19,8 @@ import siri_lite.common.Configuration;
 import siri_lite.common.DefaultAsyncHandler;
 import siri_lite.common.DefaultParameters;
 import siri_lite.common.RequestStructureFactory;
+import siri_lite.common.SiriProducerDocServices;
 import siri_lite.common.SiriProducerDocServicesFactory;
-import siri_lite.common.SiriProducerDocServicesWrapper;
 import siri_lite.common.SiriStructureFactory;
 import uk.org.siri.siri.ExtensionsStructure;
 import uk.org.siri.siri.ObjectFactory;
@@ -46,7 +48,7 @@ public class StopMonitoringService {
 		Monitor monitor = MonitorFactory
 				.start("StopMonitoringService.getStopMonitoring()");
 
-		SiriProducerDocServicesWrapper service = null;
+		SiriProducerDocServices service = null;
 		try {
 			Configuration configuration = Configuration.getInstance();
 
@@ -100,21 +102,23 @@ public class StopMonitoringService {
 					wsRequest);
 
 			// invoke web service
-			service = SiriProducerDocServicesFactory.getInstance().make(
-					SiriProducerDocServicesWrapper.class);
-			StopMonitoringHandler handler = new StopMonitoringHandler(configuration,
-					parameters,  response);
+			service = SiriProducerDocServicesFactory.make();
+			StopMonitoringHandler handler = new StopMonitoringHandler(
+					configuration, parameters, response);
 			handler.setService(service);
 			service.invoke(jaxbElement, handler, parameters);
-
+		} catch (NoSuchElementException e) {
+			log.error(e.getMessage(), e);
+			Response payload = Response.status(Status.SERVICE_UNAVAILABLE)
+					.build();
+			response.resume(payload);
 		} catch (ClassNotFoundException | ParserConfigurationException
 				| JAXBException | SOAPException e) {
 			log.error(e.getMessage(), e);
 			Response payload = Response.status(Status.BAD_REQUEST).build();
 			response.resume(payload);
 			if (service != null) {
-				SiriProducerDocServicesFactory.getInstance()
-						.invalidate(service);
+				SiriProducerDocServicesFactory.invalidate(service);
 				service = null;
 			}
 		}
@@ -125,8 +129,8 @@ public class StopMonitoringService {
 	class StopMonitoringHandler extends
 			DefaultAsyncHandler<StopMonitoringAnswerStructure> {
 
-		public StopMonitoringHandler(Configuration configuration, DefaultParameters parameters,
-				AsyncResponse response) {
+		public StopMonitoringHandler(Configuration configuration,
+				DefaultParameters parameters, AsyncResponse response) {
 			super(configuration, parameters, response);
 		}
 

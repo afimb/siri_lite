@@ -10,6 +10,7 @@ import javax.ws.rs.client.Invocation.Builder;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
+import javax.xml.bind.Unmarshaller;
 
 import lombok.NoArgsConstructor;
 
@@ -44,6 +45,7 @@ public class GZipTest extends AbstractUnit {
 		builder.header(HttpHeaders.ACCEPT_ENCODING, "gzip");
 		Response response = builder.get();
 		String value = response.readEntity(String.class);
+		Unmarshaller unmarshaller = getContext().createUnmarshaller();
 		Object object = unmarshaller.unmarshal(new StringReader(value));
 		response.close();
 

@@ -49,7 +49,7 @@ public class Service {
 		properties.putAll(uri.getPathParameters());
 		properties.putAll(uri.getQueryParameters());
 		log.info("[DSU] stoppoints-discovery : " + properties);
-		stopPointsDiscoveryService.stopPointsDiscovery(properties, response);		
+		stopPointsDiscoveryService.stopPointsDiscovery(properties, response);
 	}
 
 	@GET

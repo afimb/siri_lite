@@ -12,6 +12,7 @@ import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Response;
+import javax.xml.bind.Unmarshaller;
 import javax.xml.ws.Holder;
 import javax.xml.ws.RequestWrapper;
 import javax.xml.ws.ResponseWrapper;
@@ -86,14 +87,13 @@ public class GetStopMonitoringTest extends AbstractUnit {
 						"3"));
 		parameters.add(new BasicNameValuePair(
 				StopMonitoringParameters.MAXIMUMNUMBEROFCALLS_ONWARDS, "4"));
-		
-		
 
-		String url = Utils.buildURL(URL, parameters) +"&debug";
+		String url = Utils.buildURL(URL, parameters) + "&debug";
 		Client client = ClientBuilder.newClient();
 		WebTarget target = client.target(url);
 		Response response = target.request().get();
 		String value = response.readEntity(String.class);
+		Unmarshaller unmarshaller = getContext().createUnmarshaller();
 		Object object = unmarshaller.unmarshal(new StringReader(value));
 		response.close();
 		Assert.assertEquals(response.getStatus(), 200);

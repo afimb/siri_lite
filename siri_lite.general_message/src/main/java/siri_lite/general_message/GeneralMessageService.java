@@ -1,5 +1,7 @@
 package siri_lite.general_message;
 
+import java.util.NoSuchElementException;
+
 import javax.ejb.Stateless;
 import javax.ws.rs.container.AsyncResponse;
 import javax.ws.rs.core.MultivaluedMap;
@@ -17,8 +19,8 @@ import siri_lite.common.Configuration;
 import siri_lite.common.DefaultAsyncHandler;
 import siri_lite.common.DefaultParameters;
 import siri_lite.common.RequestStructureFactory;
+import siri_lite.common.SiriProducerDocServices;
 import siri_lite.common.SiriProducerDocServicesFactory;
-import siri_lite.common.SiriProducerDocServicesWrapper;
 import siri_lite.common.SiriStructureFactory;
 import uk.org.siri.siri.ExtensionsStructure;
 import uk.org.siri.siri.GeneralMessageRequestStructure;
@@ -46,7 +48,7 @@ public class GeneralMessageService {
 		Monitor monitor = MonitorFactory
 				.start("GeneralMessageService.getGeneralMessage()");
 
-		SiriProducerDocServicesWrapper service = null;
+		SiriProducerDocServices service = null;
 		try {
 			Configuration configuration = Configuration.getInstance();
 
@@ -100,20 +102,23 @@ public class GeneralMessageService {
 					wsRequest);
 
 			// invoke web service
-			service = SiriProducerDocServicesFactory.getInstance().make(
-					SiriProducerDocServicesWrapper.class);
+			service = SiriProducerDocServicesFactory.make();
 			GeneralMessageHandler handler = new GeneralMessageHandler(
 					configuration, parameters, response);
 			handler.setService(service);
 			service.invoke(jaxbElement, handler, parameters);
+		} catch (NoSuchElementException e) {
+			log.error(e.getMessage(), e);
+			Response payload = Response.status(Status.SERVICE_UNAVAILABLE)
+					.build();
+			response.resume(payload);
 		} catch (ClassNotFoundException | ParserConfigurationException
 				| JAXBException | SOAPException e) {
 			log.error(e.getMessage(), e);
 			Response payload = Response.status(Status.BAD_REQUEST).build();
 			response.resume(payload);
 			if (service != null) {
-				SiriProducerDocServicesFactory.getInstance()
-						.invalidate(service);
+				SiriProducerDocServicesFactory.invalidate(service);
 				service = null;
 			}
 		}

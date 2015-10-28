@@ -14,4 +14,12 @@ public abstract class Utils {
 				+ "&debug";
 	}
 
+	public static void sleep(long timeout) {
+		try {
+			Thread.sleep(timeout);
+		} catch (InterruptedException ignored) {
+
+		}
+	}
+	
 }
