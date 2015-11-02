@@ -1,5 +1,6 @@
 package siri_lite.test;
 
+import java.io.File;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,56 +16,85 @@ import javax.xml.ws.Holder;
 import javax.xml.ws.RequestWrapper;
 import javax.xml.ws.ResponseWrapper;
 
-import lombok.NoArgsConstructor;
+import lombok.extern.log4j.Log4j;
 
 import org.apache.http.message.BasicNameValuePair;
+import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
+import org.jboss.arquillian.testng.Arquillian;
+import org.jboss.shrinkwrap.api.ShrinkWrap;
+import org.jboss.shrinkwrap.api.spec.EnterpriseArchive;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import siri_lite.common.Color;
 import siri_lite.common.XmlStructureFactory;
 import siri_lite.discovery.StopPointsDiscoveryParameters;
 import uk.org.siri.siri.ExtensionsStructure;
+import uk.org.siri.siri.ObjectFactory;
 import uk.org.siri.siri.OtherErrorStructure;
 import uk.org.siri.siri.ServiceDeliveryErrorConditionStructure;
 import uk.org.siri.siri.StopPointsDeliveryStructure;
 import uk.org.siri.siri.StopPointsDiscoveryRequestStructure;
 import uk.org.siri.wsdl.StopPointsDiscoveryError;
 
-@NoArgsConstructor
-public class TimeoutTest extends AbstractUnit {
+@Log4j
+public class TimeoutTest extends Arquillian {
+
+	@Deployment(testable = false)
+	public static EnterpriseArchive createDeployment() {
+		final EnterpriseArchive result = ShrinkWrap.createFromZipFile(
+				EnterpriseArchive.class, new File(
+						"../siri/target/siri_lite.ear"));
+		return result;
+	}
+
+	private Server service = null;
+
+	public void initialize() throws Exception {
+		service = new Service();
+		service.initialize();
+	}
+
+	public void dispose() throws Exception {
+		service.dispose();
+	}
 
 	@Test
 	@RunAsClient
 	public void test() throws Exception {
 
-		initialize();
+		log.info(Color.BLUE + "[DSU] execute test : "
+				+ this.getClass().getSimpleName() + Color.NORMAL);
+		try {
+			initialize();
+			// invoke service
+			String URL = "http://localhost:8080/siri/2.0.0/stoppoints-discovery.xml";
+			List<BasicNameValuePair> parameters = new ArrayList<BasicNameValuePair>();
+			parameters
+					.add(new BasicNameValuePair(
+							StopPointsDiscoveryParameters.REQUESTOR_REF,
+							"REQUESTORREF"));
 
-		// invoke service
-		String URL = "http://localhost:8080/siri/2.0.0/stoppoints-discovery.xml";
-		List<BasicNameValuePair> parameters = new ArrayList<BasicNameValuePair>();
-		parameters.add(new BasicNameValuePair(
-				StopPointsDiscoveryParameters.REQUESTOR_REF, "REQUESTORREF"));
+			String url = Utils.buildURL(URL, parameters);
+			Client client = ClientBuilder.newClient();
+			WebTarget target = client.target(url);
+			Response response = target.request().get();
+			response.close();
 
-		String url = Utils.buildURL(URL, parameters);
-		Client client = ClientBuilder.newClient();
-		WebTarget target = client.target(url);
-		Response response = target.request().get();
-		response.close();
-
-		// response test
-		Assert.assertEquals(response.getStatus(), 503);
-
-		dispose();
-
-	}
-
-	protected Object createServer() {
-		return new Server();
+			// response test
+			Assert.assertEquals(response.getStatus(), 503);
+		} finally {
+			dispose();
+		}
 	}
 
 	@WebService(name = "SiriWS", targetNamespace = "http://wsdl.siri.org.uk")
-	public class Server {
+	public class Service extends Server {
+
+		public Service() {
+			super();
+		}
 
 		@WebMethod(operationName = "StopPointsDiscovery", action = "StopPointsDiscovery")
 		@RequestWrapper(localName = "StopPointsDiscovery", targetNamespace = "http://wsdl.siri.org.uk", className = "uk.org.siri.wsdl.WsStopPointsDiscoveryStructure")
@@ -76,9 +106,11 @@ public class TimeoutTest extends AbstractUnit {
 				@WebParam(name = "AnswerExtension", targetNamespace = "", mode = WebParam.Mode.OUT) Holder<ExtensionsStructure> answerExtension)
 				throws StopPointsDiscoveryError {
 
+			setRequest(request);
+
 			sleep(10 * 1000);
 
-			TimeoutTest.this.stopPointsDiscoveryRequest = request;
+			ObjectFactory factory = Utils.getObjectFactory();
 
 			answer.value = factory.createStopPointsDeliveryStructure();
 			answerExtension.value = factory.createExtensionsStructure();
@@ -98,8 +130,10 @@ public class TimeoutTest extends AbstractUnit {
 			}
 		}
 
-		public ServiceDeliveryErrorConditionStructure createOtherErrorStructure(
+		private ServiceDeliveryErrorConditionStructure createOtherErrorStructure(
 				String text) {
+			ObjectFactory factory = Utils.getObjectFactory();
+
 			ServiceDeliveryErrorConditionStructure result = factory
 					.createServiceDeliveryErrorConditionStructure();
 			OtherErrorStructure error = factory.createOtherErrorStructure();

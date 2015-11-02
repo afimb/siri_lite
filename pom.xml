@@ -79,7 +79,7 @@
 				<artifactId>maven-surefire-plugin</artifactId>
 				<version>2.17</version>
 				<configuration>
-					<argLine>-Dproducer.address=http://localhost:20080/siri -Dversion=2.0[FR-IDF-2.4]</argLine>
+					<argLine>-Dproducer.address=http://localhost:20080/siri -Dversion=2.0[FR-IDF-2.4] -Dtimeout=5000</argLine>
 					<forkCount>1</forkCount>
 					<systemPropertyVariables>
 						<java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
