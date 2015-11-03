@@ -58,6 +58,7 @@ public class BadRequestTest extends Arquillian {
 			List<BasicNameValuePair> parameters = new ArrayList<BasicNameValuePair>();
 			String url = Utils.buildURL(URL, parameters);
 			Client client = ClientBuilder.newClient();
+			client.register(LoginFilter.class);
 			WebTarget target = client.target(url);
 			Response response = target.request().get();
 			response.close();

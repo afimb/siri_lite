@@ -68,11 +68,11 @@ public class GZipTest extends Arquillian {
 
 			String url = Utils.buildURL(URL, parameters);
 			Client client = ClientBuilder.newClient();
-
+			client.register(LoginFilter.class);
 			WebTarget target = client.target(url);
 			Builder builder = target.request();
-			builder.header(HttpHeaders.ACCEPT_ENCODING, "gzip");
-			Response response = builder.get();
+			builder.header("compress", "true");
+			Response response = builder.get();			
 			String value = response.readEntity(String.class);
 			Unmarshaller unmarshaller = Utils.getJaxbContext()
 					.createUnmarshaller();

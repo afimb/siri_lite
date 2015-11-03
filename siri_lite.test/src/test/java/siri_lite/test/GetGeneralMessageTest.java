@@ -85,6 +85,9 @@ public class GetGeneralMessageTest extends Arquillian {
 			String URL = "http://localhost:8080/siri/2.0.0/general-message.xml";
 			List<BasicNameValuePair> parameters = new ArrayList<BasicNameValuePair>();
 			parameters.add(new BasicNameValuePair(
+					GeneralMessageParameters.MESSAGE_IDENTIFIER,
+					"MESSAGE_IDENTIFIER"));
+			parameters.add(new BasicNameValuePair(
 					GeneralMessageParameters.REQUESTOR_REF, "REQUESTORREF"));
 			parameters.add(new BasicNameValuePair(
 					GeneralMessageParameters.ACCOUNT_ID, "ACCOUNTID"));
@@ -105,6 +108,7 @@ public class GetGeneralMessageTest extends Arquillian {
 
 			String url = Utils.buildURL(URL, parameters);
 			Client client = ClientBuilder.newClient();
+			client.register(LoginFilter.class);
 			WebTarget target = client.target(url);
 			Response response = target.request().get();
 			String value = response.readEntity(String.class);
@@ -120,6 +124,12 @@ public class GetGeneralMessageTest extends Arquillian {
 			WsServiceRequestInfoStructure serviceRequestInfo = (WsServiceRequestInfoStructure) service
 					.getServiceRequestInfo();
 			Assert.assertNotNull(serviceRequestInfo);
+			Assert.assertEquals(
+					serviceRequestInfo.getDelegatorRef().getValue(),
+					"SIRI_LITE");
+			Assert.assertEquals(request.getVersion(), "2.0:FR-IDF-2.4");
+			Assert.assertEquals(request.getMessageIdentifier().getValue(),
+					"MESSAGE_IDENTIFIER");
 			Assert.assertEquals(
 					serviceRequestInfo.getRequestorRef().getValue(),
 					"REQUESTORREF");

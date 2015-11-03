@@ -10,6 +10,7 @@ import java.util.concurrent.Future;
 import javax.jws.WebMethod;
 import javax.jws.WebParam;
 import javax.jws.WebService;
+import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.core.Response;
 import javax.xml.bind.Unmarshaller;
@@ -79,15 +80,16 @@ public class JavaMultiTreadTest extends Arquillian {
 							StopPointsDiscoveryParameters.REQUESTOR_REF,
 							"REQUESTORREF"));
 			String url = Utils.buildURL(URL, parameters);
-
-			Future<Response> r1 = ClientBuilder.newClient()
-					.target(url + "&MessageIdentifier=1").request().async()
-					.get();
+			Client c1 = ClientBuilder.newClient();
+			c1.register(LoginFilter.class);
+			Future<Response> r1 = c1.target(url + "&MessageIdentifier=1")
+					.request().async().get();
 
 			Utils.sleep(200);
-			Future<Response> r2 = ClientBuilder.newClient()
-					.target(url + "&MessageIdentifier=2").request().async()
-					.get();
+			Client c2 = ClientBuilder.newClient();
+			c2.register(LoginFilter.class);
+			Future<Response> r2 = c2.target(url + "&MessageIdentifier=2")
+					.request().async().get();
 			while (!(r1.isDone() && r2.isDone())) {
 				Utils.sleep(100);
 			}

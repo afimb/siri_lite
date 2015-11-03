@@ -64,6 +64,7 @@ public class JSONMarshallerTest extends Arquillian {
 
 			String url = Utils.buildURL(URL, parameters);
 			Client client = ClientBuilder.newClient();
+			client.register(LoginFilter.class);
 			WebTarget target = client.target(url);
 			Response response = target.request()
 					.acceptEncoding("application/json").get();

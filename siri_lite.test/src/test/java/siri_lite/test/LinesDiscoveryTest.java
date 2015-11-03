@@ -71,7 +71,7 @@ public class LinesDiscoveryTest extends Arquillian {
 				+ this.getClass().getSimpleName() + Color.NORMAL);
 		try {
 			initialize();
-			
+
 			// invoke service
 			String URL = "http://localhost:8080/siri/2.0.0/lines-discovery.xml";
 			List<BasicNameValuePair> parameters = new ArrayList<BasicNameValuePair>();
@@ -84,6 +84,7 @@ public class LinesDiscoveryTest extends Arquillian {
 
 			String url = Utils.buildURL(URL, parameters);
 			Client client = ClientBuilder.newClient();
+			client.register(LoginFilter.class);
 			WebTarget target = client.target(url);
 			Response response = target.request().get();
 			String value = response.readEntity(String.class);
@@ -106,7 +107,7 @@ public class LinesDiscoveryTest extends Arquillian {
 			Assert.assertTrue(object instanceof Siri);
 			Siri siri = (Siri) object;
 			Assert.assertNotNull(siri.getLinesDelivery());
-			
+
 		} finally {
 			dispose();
 		}
