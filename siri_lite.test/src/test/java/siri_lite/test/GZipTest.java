@@ -72,7 +72,7 @@ public class GZipTest extends Arquillian {
 			WebTarget target = client.target(url);
 			Builder builder = target.request();
 			builder.header("compress", "true");
-			Response response = builder.get();			
+			Response response = builder.get();
 			String value = response.readEntity(String.class);
 			Unmarshaller unmarshaller = Utils.getJaxbContext()
 					.createUnmarshaller();

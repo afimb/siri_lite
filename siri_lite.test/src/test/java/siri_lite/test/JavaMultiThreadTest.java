@@ -43,7 +43,7 @@ import uk.org.siri.siri.StopPointsDiscoveryRequestStructure;
 import uk.org.siri.wsdl.StopPointsDiscoveryError;
 
 @Log4j
-public class JavaMultiTreadTest extends Arquillian {
+public class JavaMultiThreadTest extends Arquillian {
 
 	@Deployment(testable = false)
 	public static EnterpriseArchive createDeployment() {

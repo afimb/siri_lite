@@ -47,6 +47,8 @@ public class SiriProducerDocServices extends Service {
 	private Marshaller marshaller;
 	private Unmarshaller unmarshaller;
 	private Dispatch<SOAPMessage> dispatch;
+	
+	private LoggingHandler handler;
 
 	public SiriProducerDocServices() throws JAXBException {
 		super(wsdlLocation, serviceQName);
@@ -66,19 +68,24 @@ public class SiriProducerDocServices extends Service {
 
 		// invoke web service
 		try {
-			Binding binding = dispatch.getBinding();
-			List<Handler> list = binding.getHandlerChain();
-			if (parameters.getDebug()) {
-				list.add(new LoggingHandler());
-				binding.setHandlerChain(list);
-			} else {
-				list.clear();
-				binding.setHandlerChain(list);
-			}
+			enableDebug(parameters.getDebug());
 			Future<?> result = dispatch.invokeAsync(soapMessage, handler);
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
 		}
+	}
+	
+	private void enableDebug(boolean debug){
+		Binding binding = dispatch.getBinding();
+		List<Handler> list = binding.getHandlerChain();
+		if (debug) {
+			if(!list.contains(this.handler)){
+				list.add(this.handler);
+			}
+		} else {
+			list.remove(this.handler);				
+		}
+		binding.setHandlerChain(list);
 	}
 
 	private void initialize() throws JAXBException {
@@ -87,7 +94,8 @@ public class SiriProducerDocServices extends Service {
 		JAXBContext jaxbContext = SiriStructureFactory.getContext();
 		marshaller = jaxbContext.createMarshaller();
 		unmarshaller = jaxbContext.createUnmarshaller();
-
+		handler = new LoggingHandler();
+		
 		dispatch = createDispatch(portQName, SOAPMessage.class,
 				Service.Mode.MESSAGE);
 		Map<String, Object> context = dispatch.getRequestContext();

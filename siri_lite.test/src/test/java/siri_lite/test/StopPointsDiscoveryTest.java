@@ -8,10 +8,8 @@ import java.util.List;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.Invocation;
-import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.client.Invocation.Builder;
-import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Response;
 import javax.xml.bind.Unmarshaller;
 
@@ -99,7 +97,7 @@ public class StopPointsDiscoveryTest extends Arquillian {
 			client.register(LoginFilter.class);
 			WebTarget target = client.target(url);
 			Builder builder = target.request();
-			Response response = builder.get();					
+			Response response = builder.get();
 			String value = response.readEntity(String.class);
 			Unmarshaller unmarshaller = Utils.getJaxbContext()
 					.createUnmarshaller();
