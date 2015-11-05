@@ -1,10 +1,15 @@
 package siri_lite.common;
 
+import java.util.NoSuchElementException;
+
+import lombok.extern.log4j.Log4j;
+
 import org.apache.commons.pool.BasePoolableObjectFactory;
 import org.apache.commons.pool.ObjectPool;
 import org.apache.commons.pool.PoolableObjectFactory;
 import org.apache.commons.pool.impl.GenericObjectPool;
 
+@Log4j
 public class SiriProducerDocServicesFactory {
 
 	private static GenericObjectPool<SiriProducerDocServices> instance;
@@ -14,7 +19,8 @@ public class SiriProducerDocServicesFactory {
 		try {
 			ObjectPool<SiriProducerDocServices> pool = getInstance();
 			result = pool.borrowObject();
-		} catch (Exception ignored) {
+		} catch (Exception e) {
+			throw new NoSuchElementException();
 		}
 		return result;
 	}
@@ -47,7 +53,7 @@ public class SiriProducerDocServicesFactory {
 			instance = new GenericObjectPool<SiriProducerDocServices>(factory);
 			instance.setWhenExhaustedAction(GenericObjectPool.WHEN_EXHAUSTED_GROW);
 			String value = System.getProperty("max.request");
-			if (value != null && value.isEmpty()) {
+			if (value != null && !value.isEmpty()) {
 				int maxActive = Integer.valueOf(value);
 				if (maxActive > 0) {
 					instance.setMaxActive(maxActive);

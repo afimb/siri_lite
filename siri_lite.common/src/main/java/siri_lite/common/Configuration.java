@@ -2,6 +2,7 @@ package siri_lite.common;
 
 public class Configuration {
 
+	public static final String DEFAULT_VERSION = "2.0:FR-IDF-2.4";
 	public static final String PRODUCER_ADDRESS = "producer.address";
 	public static final String VERSION = "version";
 	public static final String REQUESTOR_REF = "requestor.ref";
@@ -30,7 +31,12 @@ public class Configuration {
 	}
 
 	public String getVersion() {
-		return getProperty(VERSION);
+		String result = DEFAULT_VERSION;
+		String value = getProperty(VERSION);
+		if (value != null && !value.isEmpty()) {
+			result = value.trim();
+		}
+		return result;
 	}
 
 	public String getRequestorRef() {
@@ -56,7 +62,7 @@ public class Configuration {
 	public Integer getTimeout() {
 		int result = 3000;
 		String value = getProperty(TIMEOUT);
-		if (value != null && value.isEmpty()) {
+		if (value != null && !value.isEmpty()) {
 			result = Integer.valueOf(value);
 		}
 		return result;
@@ -65,7 +71,7 @@ public class Configuration {
 	public Integer getStopsDiscoveryMaxAge() {
 		int result = 3600;
 		String value = getProperty(STOPS_DISCOVERY_MAX_AGE);
-		if (value != null && value.isEmpty()) {
+		if (value != null && !value.isEmpty()) {
 			result = Integer.valueOf(value);
 		}
 		return result;
@@ -74,7 +80,7 @@ public class Configuration {
 	public Integer getLinesDiscoveryMaxAge() {
 		int result = 3600;
 		String value = getProperty(LINES_DISCOVERY_MAX_AGE);
-		if (value != null && value.isEmpty()) {
+		if (value != null && !value.isEmpty()) {
 			result = Integer.valueOf(value);
 		}
 		return result;
@@ -83,7 +89,7 @@ public class Configuration {
 	public Integer getStopMonitoringMaxAge() {
 		int result = 60;
 		String value = getProperty(STOP_MONITORING_MAX_AGE);
-		if (value != null && value.isEmpty()) {
+		if (value != null && !value.isEmpty()) {
 			result = Integer.valueOf(value);
 		}
 		return result;
@@ -92,7 +98,7 @@ public class Configuration {
 	public Integer getGeneralMessageMaxAge() {
 		int result = 60;
 		String value = getProperty(GENERAL_MESSAGE_MAX_AGE);
-		if (value != null && value.isEmpty()) {
+		if (value != null && !value.isEmpty()) {
 			result = Integer.valueOf(value);
 		}
 		return result;
@@ -101,7 +107,7 @@ public class Configuration {
 	public String getDelegatorRef() {
 		String result = "SIRI_LITE";
 		String value = getProperty(DELEGATOR_REF);
-		if (value != null) {
+		if (value != null && !value.isEmpty()) {
 			result = value.trim();
 		}
 		return result;

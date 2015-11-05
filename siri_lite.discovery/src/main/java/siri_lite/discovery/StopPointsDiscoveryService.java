@@ -8,6 +8,7 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.xml.bind.JAXBElement;
+import javax.xml.bind.JAXBException;
 import javax.xml.namespace.QName;
 
 import lombok.extern.log4j.Log4j;
@@ -89,7 +90,7 @@ public class StopPointsDiscoveryService {
 			DefaultAsyncHandler<WsStopPointsDiscoveryAnswerStructure> {
 
 		public StopPointsDiscoveryHandler(Configuration configuration,
-				DefaultParameters parameters, AsyncResponse response) {
+				DefaultParameters parameters, AsyncResponse response) throws JAXBException {
 			super(configuration, parameters, response);
 		}
 

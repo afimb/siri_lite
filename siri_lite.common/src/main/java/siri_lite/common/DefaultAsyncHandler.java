@@ -8,12 +8,19 @@ import javax.ws.rs.core.CacheControl;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.Response.Status;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBElement;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
 import javax.xml.soap.SOAPBody;
 import javax.xml.soap.SOAPMessage;
 import javax.xml.ws.AsyncHandler;
 
 import lombok.Setter;
 import lombok.extern.log4j.Log4j;
+
+import org.w3c.dom.Node;
+
 import uk.org.siri.siri.Siri;
 
 import com.jamonapi.Monitor;
@@ -28,20 +35,24 @@ public abstract class DefaultAsyncHandler<T> implements
 	protected AsyncResponse peer;
 	protected DefaultParameters parameters;
 	protected Configuration configuration;
-
 	protected Class<T> type;
+
+	private Unmarshaller unmarshaller;
 
 	@Setter
 	private SiriProducerDocServices service;
 
 	@SuppressWarnings("unchecked")
 	public DefaultAsyncHandler(Configuration configuration,
-			DefaultParameters parameters, AsyncResponse response) {
+			DefaultParameters parameters, AsyncResponse response)
+			throws JAXBException {
 		this.parameters = parameters;
 		this.configuration = configuration;
 		this.peer = response;
 		type = (Class<T>) ((ParameterizedType) getClass()
 				.getGenericSuperclass()).getActualTypeArguments()[0];
+		JAXBContext jaxbContext = SiriStructureFactory.getContext();
+		unmarshaller = jaxbContext.createUnmarshaller();
 	}
 
 	@SuppressWarnings("unchecked")
@@ -54,7 +65,7 @@ public abstract class DefaultAsyncHandler<T> implements
 		try {
 			SOAPMessage soapMessage = response.get();
 			SOAPBody soapBody = soapMessage.getSOAPBody();
-			Object value = service.unmarshal(soapBody.getFirstChild());
+			Object value = unmarshal(soapBody.getFirstChild());
 			log.info(Color.CYAN + "[DSU] result : " + value + Color.NORMAL);
 			SiriProducerDocServicesFactory.passivate(service);
 			if (value != null && type.isInstance(value)) {
@@ -65,9 +76,9 @@ public abstract class DefaultAsyncHandler<T> implements
 				}
 			}
 		} catch (Exception e) {
+			log.error(e.getMessage(), e);
 			if (e.getCause().getClass().getName()
 					.equalsIgnoreCase("org.apache.cxf.binding.soap.SoapFault")) {
-				log.error(e.getMessage(), e);
 				payload = Response.status(Status.INTERNAL_SERVER_ERROR).build();
 				peer.resume(payload);
 				SiriProducerDocServicesFactory.passivate(service);
@@ -80,6 +91,12 @@ public abstract class DefaultAsyncHandler<T> implements
 		}
 
 		log.info(Color.YELLOW + "[DSU] " + monitor.stop() + Color.NORMAL);
+	}
+
+	protected Object unmarshal(Node node) throws JAXBException {
+		Object object = unmarshaller.unmarshal(node);
+		Object result = ((JAXBElement<?>) object).getValue();
+		return result;
 	}
 
 	protected void resume(Siri siri, Integer maxAge) {

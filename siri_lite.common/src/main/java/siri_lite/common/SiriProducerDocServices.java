@@ -6,10 +6,8 @@ import java.util.Map;
 import java.util.concurrent.Future;
 
 import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
 import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -26,7 +24,6 @@ import javax.xml.ws.handler.Handler;
 import lombok.extern.log4j.Log4j;
 
 import org.w3c.dom.Document;
-import org.w3c.dom.Node;
 
 import uk.org.siri.siri.ObjectFactory;
 
@@ -45,9 +42,8 @@ public class SiriProducerDocServices extends Service {
 			"SiriWSPort");
 
 	private Marshaller marshaller;
-	private Unmarshaller unmarshaller;
 	private Dispatch<SOAPMessage> dispatch;
-	
+
 	private LoggingHandler handler;
 
 	public SiriProducerDocServices() throws JAXBException {
@@ -69,21 +65,23 @@ public class SiriProducerDocServices extends Service {
 		// invoke web service
 		try {
 			enableDebug(parameters.getDebug());
+			log.info(Color.RED + "[DSU] producer : " + this.toString()
+					+ Color.NORMAL);
 			Future<?> result = dispatch.invokeAsync(soapMessage, handler);
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
 		}
 	}
-	
-	private void enableDebug(boolean debug){
+
+	private void enableDebug(boolean debug) {
 		Binding binding = dispatch.getBinding();
 		List<Handler> list = binding.getHandlerChain();
 		if (debug) {
-			if(!list.contains(this.handler)){
+			if (!list.contains(this.handler)) {
 				list.add(this.handler);
 			}
 		} else {
-			list.remove(this.handler);				
+			list.remove(this.handler);
 		}
 		binding.setHandlerChain(list);
 	}
@@ -93,9 +91,8 @@ public class SiriProducerDocServices extends Service {
 		Configuration configuration = Configuration.getInstance();
 		JAXBContext jaxbContext = SiriStructureFactory.getContext();
 		marshaller = jaxbContext.createMarshaller();
-		unmarshaller = jaxbContext.createUnmarshaller();
 		handler = new LoggingHandler();
-		
+
 		dispatch = createDispatch(portQName, SOAPMessage.class,
 				Service.Mode.MESSAGE);
 		Map<String, Object> context = dispatch.getRequestContext();
@@ -123,9 +120,4 @@ public class SiriProducerDocServices extends Service {
 
 	}
 
-	public Object unmarshal(Node node) throws JAXBException {
-		Object object = unmarshaller.unmarshal(node);
-		Object result = ((JAXBElement<?>) object).getValue();
-		return result;
-	}
 }

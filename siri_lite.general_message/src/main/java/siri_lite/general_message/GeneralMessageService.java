@@ -130,7 +130,7 @@ public class GeneralMessageService {
 			DefaultAsyncHandler<GeneralMessageAnswerStructure> {
 
 		public GeneralMessageHandler(Configuration configuration,
-				DefaultParameters parameters, AsyncResponse response) {
+				DefaultParameters parameters, AsyncResponse response) throws JAXBException {
 			super(configuration, parameters, response);
 		}
 

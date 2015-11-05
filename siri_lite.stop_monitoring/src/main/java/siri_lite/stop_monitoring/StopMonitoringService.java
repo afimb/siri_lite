@@ -130,7 +130,7 @@ public class StopMonitoringService {
 			DefaultAsyncHandler<StopMonitoringAnswerStructure> {
 
 		public StopMonitoringHandler(Configuration configuration,
-				DefaultParameters parameters, AsyncResponse response) {
+				DefaultParameters parameters, AsyncResponse response) throws JAXBException {
 			super(configuration, parameters, response);
 		}
 
