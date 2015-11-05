@@ -67,10 +67,4 @@ public abstract class Utils {
 	public static JAXBContext getJaxbContext() {
 		return jaxbContext;
 	}
-
-	static {
-		BasicConfigurator.configure();
-		Logger.getRootLogger().setLevel(Level.INFO);
-	}
-
 }

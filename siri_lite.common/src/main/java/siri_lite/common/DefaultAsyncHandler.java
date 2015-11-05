@@ -77,16 +77,16 @@ public abstract class DefaultAsyncHandler<T> implements
 			}
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
+			SiriProducerDocServicesFactory.invalidate(service);
+
 			if (e.getCause().getClass().getName()
 					.equalsIgnoreCase("org.apache.cxf.binding.soap.SoapFault")) {
 				payload = Response.status(Status.INTERNAL_SERVER_ERROR).build();
-				peer.resume(payload);
-				SiriProducerDocServicesFactory.passivate(service);
+				peer.resume(payload);				
 			} else {
 				log.error(e.getMessage(), e.getCause());
 				payload = Response.status(Status.SERVICE_UNAVAILABLE).build();
 				peer.resume(payload);
-				SiriProducerDocServicesFactory.invalidate(service);
 			}
 		}
 

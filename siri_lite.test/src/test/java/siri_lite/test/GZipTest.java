@@ -54,7 +54,7 @@ public class GZipTest extends Arquillian {
 	@RunAsClient
 	public void test() throws Exception {
 
-		log.info(Color.BLUE + "[DSU] execute test : "
+		log.info(Color.YELLOW + "[DSU] execute test : "
 				+ this.getClass().getSimpleName() + Color.NORMAL);
 		try {
 			initialize();

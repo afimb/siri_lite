@@ -20,9 +20,6 @@ class Server {
 	private Object serviceRequestInfo;
 
 	protected void initialize() throws Exception {
-		// log.info(Color.YELLOW + "[DSU] ---------------> TEST : "
-		// + this.getClass().getSimpleName() + Color.NORMAL);
-
 		String address = "http://localhost:20080/siri";
 		endpoint = Endpoint.create(this);
 		endpoint.publish(address);
