@@ -43,12 +43,10 @@ public class SiriProducerDocServices extends Service {
 
 	private Marshaller marshaller;
 	private Dispatch<SOAPMessage> dispatch;
-
 	private LoggingHandler handler;
 
 	public SiriProducerDocServices() throws JAXBException {
-		super(wsdlLocation, serviceQName);
-		initialize();
+		super(wsdlLocation, serviceQName);		
 	}
 
 	public void invoke(Object jaxbElement, AsyncHandler<SOAPMessage> handler,
@@ -85,14 +83,17 @@ public class SiriProducerDocServices extends Service {
 		}
 		binding.setHandlerChain(list);
 	}
-
-	private void initialize() throws JAXBException {
+	public void dispose() {
+		marshaller = null;
+		dispatch = null;
+		handler = null;
+	}
+	public void initialize() throws JAXBException {
 
 		Configuration configuration = Configuration.getInstance();
 		JAXBContext jaxbContext = SiriStructureFactory.getContext();
 		marshaller = jaxbContext.createMarshaller();
 		handler = new LoggingHandler();
-
 		dispatch = createDispatch(portQName, SOAPMessage.class,
 				Service.Mode.MESSAGE);
 		Map<String, Object> context = dispatch.getRequestContext();

@@ -77,7 +77,7 @@ public abstract class DefaultAsyncHandler<T> implements
 			}
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
-			SiriProducerDocServicesFactory.invalidate(service);
+			SiriProducerDocServicesFactory.passivate(service);
 
 			if (e.getCause().getClass().getName()
 					.equalsIgnoreCase("org.apache.cxf.binding.soap.SoapFault")) {

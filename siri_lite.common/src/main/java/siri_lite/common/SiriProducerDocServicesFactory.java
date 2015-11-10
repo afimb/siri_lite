@@ -8,13 +8,14 @@ import org.apache.commons.pool.BasePoolableObjectFactory;
 import org.apache.commons.pool.ObjectPool;
 import org.apache.commons.pool.PoolableObjectFactory;
 import org.apache.commons.pool.impl.GenericObjectPool;
+import org.apache.commons.pool.impl.StackObjectPool;
 
 @Log4j
 public class SiriProducerDocServicesFactory {
 
 	private static GenericObjectPool<SiriProducerDocServices> instance;
 
-	public static SiriProducerDocServices make() {
+	public static synchronized SiriProducerDocServices make() {
 		SiriProducerDocServices result = null;
 		try {
 			ObjectPool<SiriProducerDocServices> pool = getInstance();
@@ -25,7 +26,7 @@ public class SiriProducerDocServicesFactory {
 		return result;
 	}
 
-	public static void passivate(SiriProducerDocServices o) {
+	public static synchronized void passivate(SiriProducerDocServices o) {
 		try {
 			ObjectPool<SiriProducerDocServices> pool = getInstance();
 			pool.returnObject(o);
@@ -33,7 +34,7 @@ public class SiriProducerDocServicesFactory {
 		}
 	}
 
-	public static void invalidate(SiriProducerDocServices o) {
+	public static synchronized void invalidate(SiriProducerDocServices o) {
 		try {
 			ObjectPool<SiriProducerDocServices> pool = getInstance();
 			pool.invalidateObject(o);
@@ -41,15 +42,24 @@ public class SiriProducerDocServicesFactory {
 		}
 	}
 
-	private static synchronized ObjectPool<SiriProducerDocServices> getInstance() {
+	private static ObjectPool<SiriProducerDocServices> getInstance() {
 		if (instance == null) {
 			PoolableObjectFactory<SiriProducerDocServices> factory = new BasePoolableObjectFactory<SiriProducerDocServices>() {
 
 				@Override
 				public SiriProducerDocServices makeObject() throws Exception {
-					return new SiriProducerDocServices();
+					SiriProducerDocServices service = new SiriProducerDocServices();
+					service.initialize();
+					return service;
+				}
+
+				@Override
+				public void destroyObject(SiriProducerDocServices service)
+						throws Exception {
+					service.dispose();
 				}
 			};
+			
 			instance = new GenericObjectPool<SiriProducerDocServices>(factory);
 			instance.setWhenExhaustedAction(GenericObjectPool.WHEN_EXHAUSTED_GROW);
 			String value = System.getProperty("max.request");
