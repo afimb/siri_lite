@@ -112,13 +112,12 @@ public class StopMonitoringService {
 			Response payload = Response.status(Status.SERVICE_UNAVAILABLE)
 					.build();
 			response.resume(payload);
-		} catch (ClassNotFoundException | ParserConfigurationException
-				| JAXBException | SOAPException e) {
+		} catch (Exception e) {
 			log.error(e.getMessage(), e);
 			Response payload = Response.status(Status.BAD_REQUEST).build();
 			response.resume(payload);
 			if (service != null) {
-				SiriProducerDocServicesFactory.invalidate(service);
+				SiriProducerDocServicesFactory.passivate(service);
 				service = null;
 			}
 		}

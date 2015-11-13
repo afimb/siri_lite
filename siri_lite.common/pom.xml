@@ -43,16 +43,12 @@
 			<groupId>commons-lang</groupId>
 			<artifactId>commons-lang</artifactId>
 		</dependency>
-<!-- 		<dependency> -->
-<!-- 			<groupId>org.apache.cxf</groupId> -->
-<!-- 			<artifactId>cxf-rt-transports-http</artifactId> -->
-<!-- 			<scope>provided</scope> -->
-<!-- 		</dependency> -->
-<!-- 		<dependency> -->
-<!-- 			<groupId>org.jboss.ws</groupId> -->
-<!-- 			<artifactId>jbossws-api</artifactId> -->
-<!-- 			<scope>provided</scope> -->
-<!-- 		</dependency> -->
+
+		<dependency>
+			<groupId>org.jboss.resteasy</groupId>
+			<artifactId>resteasy-client</artifactId>
+			<scope>provided</scope>
+		</dependency>
 
 		<!-- Modules Dependencies -->
 		<dependency>
@@ -79,7 +75,7 @@
 				<configuration>
 					<archive>
 						<manifestEntries>
-							<Dependencies>org.jboss.ws.cxf.jbossws-cxf-client services</Dependencies>
+							<Dependencies>org.jboss.ws.cxf.jbossws-cxf-client services export</Dependencies>
 						</manifestEntries>
 					</archive>
 				</configuration>

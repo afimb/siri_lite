@@ -2,15 +2,11 @@ package siri_lite.common;
 
 import java.util.NoSuchElementException;
 
-import lombok.extern.log4j.Log4j;
-
 import org.apache.commons.pool.BasePoolableObjectFactory;
 import org.apache.commons.pool.ObjectPool;
 import org.apache.commons.pool.PoolableObjectFactory;
 import org.apache.commons.pool.impl.GenericObjectPool;
-import org.apache.commons.pool.impl.StackObjectPool;
 
-@Log4j
 public class SiriProducerDocServicesFactory {
 
 	private static GenericObjectPool<SiriProducerDocServices> instance;
@@ -59,7 +55,7 @@ public class SiriProducerDocServicesFactory {
 					service.dispose();
 				}
 			};
-			
+
 			instance = new GenericObjectPool<SiriProducerDocServices>(factory);
 			instance.setWhenExhaustedAction(GenericObjectPool.WHEN_EXHAUSTED_GROW);
 			String value = System.getProperty("max.request");

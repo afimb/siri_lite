@@ -10,9 +10,6 @@ import javax.xml.datatype.DatatypeFactory;
 
 import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.message.BasicNameValuePair;
-import org.apache.log4j.BasicConfigurator;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
 
 import uk.org.siri.siri.ObjectFactory;
 

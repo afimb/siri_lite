@@ -68,6 +68,7 @@ public class StopPointsDiscoveryService {
 					configuration, parameters, response);
 			handler.setService(service);
 			service.invoke(jaxbElement, handler, parameters);
+			
 		} catch (NoSuchElementException e) {
 			log.error(e.getMessage(), e);
 			Response payload = Response.status(Status.SERVICE_UNAVAILABLE)
@@ -78,12 +79,11 @@ public class StopPointsDiscoveryService {
 			Response payload = Response.status(Status.BAD_REQUEST).build();
 			response.resume(payload);
 			if (service != null) {
-				SiriProducerDocServicesFactory.invalidate(service);
+				SiriProducerDocServicesFactory.passivate(service);
 				service = null;
 			}
 		}
 		log.info(Color.GREEN + "[DSU] " + monitor.stop() + Color.NORMAL);
-
 	}
 
 	class StopPointsDiscoveryHandler extends
@@ -93,6 +93,7 @@ public class StopPointsDiscoveryService {
 				DefaultParameters parameters, AsyncResponse response) throws JAXBException {
 			super(configuration, parameters, response);
 		}
+
 
 		public void handleResponse(WsStopPointsDiscoveryAnswerStructure response) {
 

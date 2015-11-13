@@ -6,10 +6,8 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.xml.datatype.XMLGregorianCalendar;
 
 import lombok.Data;
-import lombok.extern.log4j.Log4j;
 import uk.org.siri.siri.MessageQualifierStructure;
 
-@Log4j
 @Data
 public abstract class DefaultParameters {
 

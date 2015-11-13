@@ -79,7 +79,7 @@ public class LinesDiscoveryService {
 			Response payload = Response.status(Status.BAD_REQUEST).build();
 			response.resume(payload);
 			if (service != null) {
-				SiriProducerDocServicesFactory.invalidate(service);
+				SiriProducerDocServicesFactory.passivate(service);
 				service = null;
 			}
 		}

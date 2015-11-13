@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.StringReader;
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.jws.WebMethod;
@@ -15,6 +16,7 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Response;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.Unmarshaller;
+import javax.xml.namespace.QName;
 import javax.xml.ws.Holder;
 import javax.xml.ws.RequestWrapper;
 import javax.xml.ws.ResponseWrapper;
@@ -38,18 +40,21 @@ import uk.org.siri.siri.GeneralMessageDeliveriesStructure;
 import uk.org.siri.siri.GeneralMessageDeliveryStructure;
 import uk.org.siri.siri.GeneralMessageRequestStructure;
 import uk.org.siri.siri.InfoChannelRefStructure;
+import uk.org.siri.siri.InfoMessageRefStructure;
+import uk.org.siri.siri.InfoMessageStructure;
 import uk.org.siri.siri.LineRefStructure;
 import uk.org.siri.siri.MessageQualifierStructure;
 import uk.org.siri.siri.MessageRefStructure;
+import uk.org.siri.siri.NaturalLanguageStringStructure;
 import uk.org.siri.siri.ObjectFactory;
-import uk.org.siri.siri.OtherErrorStructure;
 import uk.org.siri.siri.ParticipantRefStructure;
 import uk.org.siri.siri.ProducerResponseEndpointStructure;
-import uk.org.siri.siri.ServiceDeliveryErrorConditionStructure;
 import uk.org.siri.siri.Siri;
 import uk.org.siri.wsdl.GeneralMessageError;
 import uk.org.siri.wsdl.WsServiceRequestInfoStructure;
 import uk.org.siri.wsdl.siri.IDFGeneralMessageRequestFilterStructure;
+import uk.org.siri.wsdl.siri.IDFGeneralMessageStructure;
+import uk.org.siri.wsdl.siri.IDFMessageStructure;
 
 @Log4j
 public class GetGeneralMessageTest extends Arquillian {
@@ -195,59 +200,106 @@ public class GetGeneralMessageTest extends Arquillian {
 				@WebParam(name = "Answer", targetNamespace = "", mode = WebParam.Mode.OUT) Holder<GeneralMessageDeliveriesStructure> answer,
 				@WebParam(name = "AnswerExtension", targetNamespace = "", mode = WebParam.Mode.OUT) Holder<ExtensionsStructure> answerExtension)
 				throws GeneralMessageError {
+			try {
+				setRequest(request);
+				setServiceRequestInfo(serviceRequestInfo);
 
-			setRequest(request);
-			setServiceRequestInfo(serviceRequestInfo);
+				ObjectFactory factory = Utils.getObjectFactory();
 
-			ObjectFactory factory = Utils.getObjectFactory();
+				serviceDeliveryInfo.value = factory
+						.createProducerResponseEndpointStructure();
+				answer.value = factory
+						.createGeneralMessageDeliveriesStructure();
+				answerExtension.value = factory.createExtensionsStructure();
 
-			serviceDeliveryInfo.value = factory
-					.createProducerResponseEndpointStructure();
-			answer.value = factory.createGeneralMessageDeliveriesStructure();
-			answerExtension.value = factory.createExtensionsStructure();
+				serviceDeliveryInfo.value
+						.setResponseTimestamp(XmlStructureFactory
+								.getTimestamp());
+				ParticipantRefStructure participantRef = factory
+						.createParticipantRefStructure();
+				participantRef.setValue("PARTICIPANTREF");
+				serviceDeliveryInfo.value.setProducerRef(participantRef);
+				serviceDeliveryInfo.value.setAddress("ADDRESS");
+				MessageQualifierStructure messageQualifier = factory
+						.createMessageQualifierStructure();
+				messageQualifier.setValue("MESSAGEQUALIFIER");
+				serviceDeliveryInfo.value
+						.setResponseMessageIdentifier(messageQualifier);
+				MessageRefStructure messageRef = factory
+						.createMessageRefStructure();
+				messageRef.setValue("MESSAGEREF");
+				serviceDeliveryInfo.value.setRequestMessageRef(messageRef);
 
-			serviceDeliveryInfo.value.setResponseTimestamp(XmlStructureFactory
-					.getTimestamp());
-			ParticipantRefStructure participantRef = factory
-					.createParticipantRefStructure();
-			participantRef.setValue("PARTICIPANTREF");
-			serviceDeliveryInfo.value.setProducerRef(participantRef);
-			serviceDeliveryInfo.value.setAddress("ADDRESS");
-			MessageQualifierStructure messageQualifier = factory
-					.createMessageQualifierStructure();
-			messageQualifier.setValue("MESSAGEQUALIFIER");
-			serviceDeliveryInfo.value
-					.setResponseMessageIdentifier(messageQualifier);
-			MessageRefStructure messageRef = factory
-					.createMessageRefStructure();
-			messageRef.setValue("MESSAGEREF");
-			serviceDeliveryInfo.value.setRequestMessageRef(messageRef);
+				GeneralMessageDeliveryStructure delivery = factory
+						.createGeneralMessageDeliveryStructure();
+				answer.value.getGeneralMessageDelivery().add(delivery);
 
-			GeneralMessageDeliveryStructure delivery = factory
-					.createGeneralMessageDeliveryStructure();
-			answer.value.getGeneralMessageDelivery().add(delivery);
+				delivery.setResponseTimestamp(XmlStructureFactory
+						.getTimestamp());
+				delivery.setVersion(request.getVersion());
+				delivery.setStatus(Boolean.FALSE);
+				delivery.setVersion(request.getVersion());
 
-			delivery.setResponseTimestamp(XmlStructureFactory.getTimestamp());
-			delivery.setVersion(request.getVersion());
-			delivery.setStatus(Boolean.FALSE);
-			delivery.setVersion(request.getVersion());
-			ServiceDeliveryErrorConditionStructure error = createOtherErrorStructure("");
-			delivery.setErrorCondition(error);
+				// set info message
+				InfoMessageStructure info = factory
+						.createInfoMessageStructure();
+				delivery.getGeneralMessage().add(info);
+				info.setFormatRef("FORMATREF");
+				info.setInfoMessageVersion(BigInteger.valueOf(1));
+				InfoChannelRefStructure value = factory
+						.createInfoChannelRefStructure();
+				value.setValue("Information");
+				info.setInfoChannelRef(value);
+				info.setRecordedAtTime(XmlStructureFactory
+						.getTimestamp(new Date()));
+				info.setValidUntilTime(XmlStructureFactory
+						.getTimestamp(new Date()));
+				InfoMessageRefStructure infoMessageIdentifier = factory
+						.createInfoMessageRefStructure();
+				infoMessageIdentifier.setValue("1");
+				info.setInfoMessageIdentifier(infoMessageIdentifier);
+				info.setItemIdentifier("1");
 
+				JAXBElement<IDFGeneralMessageStructure> jaxbElement = createIDFGeneralMessageStructure();
+				// info.setContent(jaxbElement);
+
+				delivery.getGeneralMessage().add(info);
+			} catch (Exception e) {
+				log.info(e.getMessage(), e);
+			}
 		}
 
-		private ServiceDeliveryErrorConditionStructure createOtherErrorStructure(
-				String text) {
+		private JAXBElement<IDFGeneralMessageStructure> createIDFGeneralMessageStructure() {
+			JAXBElement<IDFGeneralMessageStructure> result = null;
 
-			ObjectFactory factory = Utils.getObjectFactory();
+			try {
+				ObjectFactory factory = Utils.getObjectFactory();
+				uk.org.siri.wsdl.siri.ObjectFactory idfFactory = new uk.org.siri.wsdl.siri.ObjectFactory();
+				IDFGeneralMessageStructure element = idfFactory
+						.createIDFGeneralMessageStructure();
 
-			ServiceDeliveryErrorConditionStructure result = factory
-					.createServiceDeliveryErrorConditionStructure();
-			OtherErrorStructure error = factory.createOtherErrorStructure();
-			error.setErrorText(text);
-			error.setNumber(BigInteger.valueOf(0));
-			result.setOtherError(error);
+				IDFMessageStructure idfMessage = idfFactory
+						.createIDFMessageStructure();
+				element.getMessage().add(idfMessage);
 
+				NaturalLanguageStringStructure naturalLanguageString = factory
+						.createNaturalLanguageStringStructure();
+				idfMessage.setMessageText(naturalLanguageString);
+				naturalLanguageString.setValue("TODO");
+				naturalLanguageString.setLang("fr");
+
+				LineRefStructure lineRef = factory.createLineRefStructure();
+				lineRef.setValue("1");
+				element.getLineRef().add(lineRef);
+
+				QName name = new QName("http://wsdl.siri.org.uk/siri",
+						"IDFGeneralMessage");
+				result = new JAXBElement<IDFGeneralMessageStructure>(name,
+						IDFGeneralMessageStructure.class, element);
+
+			} catch (Exception e) {
+				log.info(e.getMessage(), e);
+			}
 			return result;
 		}
 	}

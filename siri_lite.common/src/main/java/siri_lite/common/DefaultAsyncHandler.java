@@ -1,8 +1,12 @@
 package siri_lite.common;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.lang.reflect.ParameterizedType;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
+import javax.ws.rs.client.InvocationCallback;
 import javax.ws.rs.container.AsyncResponse;
 import javax.ws.rs.core.CacheControl;
 import javax.ws.rs.core.Response;
@@ -12,9 +16,9 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
+import javax.xml.soap.MessageFactory;
 import javax.xml.soap.SOAPBody;
 import javax.xml.soap.SOAPMessage;
-import javax.xml.ws.AsyncHandler;
 
 import lombok.Setter;
 import lombok.extern.log4j.Log4j;
@@ -28,7 +32,7 @@ import com.jamonapi.MonitorFactory;
 
 @Log4j
 public abstract class DefaultAsyncHandler<T> implements
-		AsyncHandler<SOAPMessage> {
+		InvocationCallback<Response> {
 
 	public static final String GZIP = "; gzip";
 
@@ -57,39 +61,50 @@ public abstract class DefaultAsyncHandler<T> implements
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public void handleResponse(javax.xml.ws.Response<SOAPMessage> response) {
-
+	public void completed(Response response) {
 		Monitor monitor = MonitorFactory
-				.start("DefaultAsyncHandler.handleResponse()");
-		Response payload = null;
+				.start("DefaultAsyncHandler.completed()");
 		try {
-			SOAPMessage soapMessage = response.get();
+			String entity = response.readEntity(String.class);
+			// log.info("[DSU] receive : " + entity);
+			InputStream in = new ByteArrayInputStream(
+					entity.getBytes(StandardCharsets.UTF_8));
+			SOAPMessage soapMessage = MessageFactory.newInstance()
+					.createMessage(null, in);
 			SOAPBody soapBody = soapMessage.getSOAPBody();
-			Object value = unmarshal(soapBody.getFirstChild());
-			log.info(Color.CYAN + "[DSU] result : " + value + Color.NORMAL);
-			SiriProducerDocServicesFactory.passivate(service);
-			if (value != null && type.isInstance(value)) {
-				try {
-					handleResponse((T) value);
-				} catch (Exception e) {
-					log.error(e.getMessage(), e);
+			if (soapBody.getFault() != null) {
+				Response payload = Response
+						.status(Status.INTERNAL_SERVER_ERROR).build();
+				peer.resume(payload);
+			} else {
+				Object value = unmarshal(soapBody.getFirstChild());
+				log.info(Color.CYAN + "[DSU] result : " + value + Color.NORMAL);
+				if (value != null && type.isInstance(value)) {
+					try {
+						handleResponse((T) value);
+					} catch (Exception e) {
+						log.error(e.getMessage(), e);
+					}
 				}
 			}
+			SiriProducerDocServicesFactory.passivate(service);
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
-			SiriProducerDocServicesFactory.passivate(service);
-
-			if (e.getCause().getClass().getName()
-					.equalsIgnoreCase("org.apache.cxf.binding.soap.SoapFault")) {
-				payload = Response.status(Status.INTERNAL_SERVER_ERROR).build();
-				peer.resume(payload);				
-			} else {
-				log.error(e.getMessage(), e.getCause());
-				payload = Response.status(Status.SERVICE_UNAVAILABLE).build();
-				peer.resume(payload);
-			}
+			Response payload = Response.status(Status.INTERNAL_SERVER_ERROR)
+					.build();
+			peer.resume(payload);
+			SiriProducerDocServicesFactory.invalidate(service);
 		}
+		log.info(Color.YELLOW + "[DSU] " + monitor.stop() + Color.NORMAL);
+	}
 
+	@Override
+	public void failed(Throwable e) {
+		Monitor monitor = MonitorFactory.start("DefaultAsyncHandler.failed()");
+		log.error(e.getMessage(), e);
+		Response payload = Response.status(Status.SERVICE_UNAVAILABLE).build();
+		peer.resume(payload);
+		SiriProducerDocServicesFactory.invalidate(service);
 		log.info(Color.YELLOW + "[DSU] " + monitor.stop() + Color.NORMAL);
 	}
 
