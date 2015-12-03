@@ -105,7 +105,7 @@ public class Configuration {
 	}
 
 	public String getDelegatorRef() {
-		String result = "SIRI_LITE";
+		String result = "";
 		String value = getProperty(DELEGATOR_REF);
 		if (value != null && !value.isEmpty()) {
 			result = value.trim();
