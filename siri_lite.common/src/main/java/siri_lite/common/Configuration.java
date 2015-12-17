@@ -3,19 +3,19 @@ package siri_lite.common;
 public class Configuration {
 
 	public static final String DEFAULT_VERSION = "2.0:FR-IDF-2.4";
-	public static final String PRODUCER_ADDRESS = "producer.address";
-	public static final String VERSION = "version";
-	public static final String REQUESTOR_REF = "requestor.ref";
-	public static final String DELEGATOR_REF = "delegator.ref";
-	public static final String PROXY_HOST = "proxy.host";
-	public static final String PROXY_PORT = "proxy.port";
-	public static final String PROXY_USER = "proxy.user";
-	public static final String PROXY_PASSWORD = "proxy.password";
-	public static final String TIMEOUT = "timeout";
-	public static final String STOPS_DISCOVERY_MAX_AGE = "stops_discovery.max_age";
-	public static final String LINES_DISCOVERY_MAX_AGE = "lines_discovery.max_age";
-	public static final String STOP_MONITORING_MAX_AGE = "stop_monitoring.max_age";
-	public static final String GENERAL_MESSAGE_MAX_AGE = "general_message.max_age";
+	public static final String PRODUCER_ADDRESS = "siri_lite.producer.address";
+	public static final String VERSION = "siri_lite.version";
+	public static final String REQUESTOR_REF = "siri_lite.requestor.ref";
+	public static final String DELEGATOR_REF = "siri_lite.delegator.ref";
+	public static final String PROXY_HOST = "siri_lite.proxy.host";
+	public static final String PROXY_PORT = "siri_lite.proxy.port";
+	public static final String PROXY_USER = "siri_lite.proxy.user";
+	public static final String PROXY_PASSWORD = "siri_lite.proxy.password";
+	public static final String TIMEOUT = "siri_lite.timeout";
+	public static final String STOPS_DISCOVERY_MAX_AGE = "siri_lite.stops_discovery.max_age";
+	public static final String LINES_DISCOVERY_MAX_AGE = "siri_lite.lines_discovery.max_age";
+	public static final String STOP_MONITORING_MAX_AGE = "siri_lite.stop_monitoring.max_age";
+	public static final String GENERAL_MESSAGE_MAX_AGE = "siri_lite.general_message.max_age";
 
 	private static Configuration instance;
 

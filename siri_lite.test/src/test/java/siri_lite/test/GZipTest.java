@@ -35,7 +35,7 @@ public class GZipTest extends Arquillian {
 	public static EnterpriseArchive createDeployment() {
 		final EnterpriseArchive result = ShrinkWrap.createFromZipFile(
 				EnterpriseArchive.class, new File(
-						"../siri/target/siri_lite.ear"));
+						"../siri_lite.server/target/siri_lite.ear"));
 		return result;
 	}
 

@@ -81,7 +81,7 @@
 						<vmArg>-Djavax.xml.accessExternalSchema=all</vmArg>
 					</vmArgs>
 					<schemaDirectory>${wsdldir}</schemaDirectory>
-					<schemaFiles>siri.xsd,siri-FR-IDF-Extensions-2.4.xsd</schemaFiles>
+					<schemaFiles>siri.xsd,siri-FR-IDF-Extensions-2.4.xsd,siri-IDF-Message.xsd</schemaFiles>
 					<xjcArgs>
 						<xjcArg>-npa</xjcArg>
 						<xjcArg>-b</xjcArg>

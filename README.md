@@ -8,7 +8,7 @@ Siri Lite is a java project that provides ta bridge between a web service Siri s
 
 This java project is split into modules :
 
-* siri : **REST server (ear)**
+* siri_lite.server : **REST server (ear)**
 * uk.org.siri.siri : siri xsd mapped classes
 * uk.org.siri.wsdl : siri wsdl mapped classes
 * siri_lite.common : Common classes and interfaces
@@ -75,16 +75,19 @@ mvn -DskipTests install
 ```
 
 ### Installation from binary
-download siri_lite.x.y.z.zip from [maven repository](http://maven.chouette.mobi)
+download siri_lite.x.y.z.zip from [maven repository](http://maven.chouette.mobi/siri/siri_lite/siri_lite.server)
 
 [Install and configure Wildfly](./doc/install/wildfly.md) 
 
 in wildfly installation repository :
 ```sh
 bin/jboss-cli.sh connect, deploy --force  (path to ...)/siri_lite.ear
-bin/jboss-cli.sh -c "/system-property=producer.address:add(value='web service SIRI server endpoint address')"
+bin/jboss-cli.sh -c "/system-property=siri_lite.producer.address:add(value='web service SIRI server endpoint address')"
 ```
 
+## Documentation
+ 
+Documentation is available in french on [Chouette Project website](http://www.chouette.mobi).
 ## License
  
 This project is licensed under the CeCILL-B license, a copy of which can be found in the [LICENSE](./LICENSE.md) file.

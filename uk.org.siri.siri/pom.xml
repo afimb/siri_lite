@@ -43,7 +43,7 @@
 				<version>1.5</version>
 				<configuration>
 					<schemaDirectory>${basedir}/src/main/resources/wsdl</schemaDirectory>
-					<schemaFiles>siri.xsd,siri-FR-IDF-Extensions-2.4.xsd</schemaFiles>
+					<schemaFiles>siri.xsd,siri-FR-IDF-Extensions-2.4.xsd,siri-IDF-Message.xsd</schemaFiles>
 					<arguments>-episode ${basedir}/siri.episode -extension -b ${basedir}/src/main/resources/wsdl/bindings.xml</arguments>
 				</configuration>
 				<executions>

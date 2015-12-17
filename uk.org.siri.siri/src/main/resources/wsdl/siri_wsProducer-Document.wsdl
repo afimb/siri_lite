@@ -11,6 +11,9 @@
 		<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://wsdl.siri.org.uk/siri">
 			<xsd:include schemaLocation="siri-FR-IDF-Extensions-2.4.xsd"/>
 		</xsd:schema>
+      <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.siri.org.uk/siri">
+         <xsd:include schemaLocation="siri-IDF-Message.xsd"/>
+      </xsd:schema>
 	</types>
 	<message name="CheckStatusRequest">
 		<part name="CheckStatusRequestParameters" element="siriWS:CheckStatus"/>

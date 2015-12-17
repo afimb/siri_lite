@@ -16,7 +16,6 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Response;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.Unmarshaller;
-import javax.xml.namespace.QName;
 import javax.xml.ws.Holder;
 import javax.xml.ws.RequestWrapper;
 import javax.xml.ws.ResponseWrapper;
@@ -61,9 +60,8 @@ public class GetGeneralMessageTest extends Arquillian {
 
 	@Deployment(testable = false)
 	public static EnterpriseArchive createDeployment() {
-		final EnterpriseArchive result = ShrinkWrap.createFromZipFile(
-				EnterpriseArchive.class, new File(
-						"../siri/target/siri_lite.ear"));
+		final EnterpriseArchive result = ShrinkWrap.createFromZipFile(EnterpriseArchive.class, new File(
+				"../siri_lite.server/target/siri_lite.ear"));
 		return result;
 	}
 
@@ -82,34 +80,22 @@ public class GetGeneralMessageTest extends Arquillian {
 	@RunAsClient
 	public void test() throws Exception {
 
-		log.info(Color.YELLOW + "[DSU] execute test : "
-				+ this.getClass().getSimpleName() + Color.NORMAL);
+		log.info(Color.YELLOW + "[DSU] execute test : " + this.getClass().getSimpleName() + Color.NORMAL);
 		try {
 			initialize();
 			// invoke service
 			String URL = "http://localhost:8080/siri/2.0.0/general-message.xml";
 			List<BasicNameValuePair> parameters = new ArrayList<BasicNameValuePair>();
-			parameters.add(new BasicNameValuePair(
-					GeneralMessageParameters.MESSAGE_IDENTIFIER,
-					"MESSAGE_IDENTIFIER"));
-			parameters.add(new BasicNameValuePair(
-					GeneralMessageParameters.REQUESTOR_REF, "REQUESTORREF"));
-			parameters.add(new BasicNameValuePair(
-					GeneralMessageParameters.ACCOUNT_ID, "ACCOUNTID"));
-			parameters.add(new BasicNameValuePair(
-					GeneralMessageParameters.ACCOUNT_KEY, "ACCOUNTKEY"));
-			parameters.add(new BasicNameValuePair(
-					GeneralMessageParameters.LANGUAGE, "fr"));
-			parameters.add(new BasicNameValuePair(
-					GeneralMessageParameters.INFO_CHANNEL_REF, "Information"));
-			parameters.add(new BasicNameValuePair(
-					GeneralMessageParameters.INFO_CHANNEL_REF, "Perturbation"));
-			parameters.add(new BasicNameValuePair(
-					GeneralMessageParameters.LINE_REF, "LINEREF.1"));
-			parameters.add(new BasicNameValuePair(
-					GeneralMessageParameters.LINE_REF, "LINEREF.2"));
-			parameters.add(new BasicNameValuePair(
-					GeneralMessageParameters.LINE_REF, "LINEREF.3"));
+			parameters.add(new BasicNameValuePair(GeneralMessageParameters.MESSAGE_IDENTIFIER, "MESSAGE_IDENTIFIER"));
+			parameters.add(new BasicNameValuePair(GeneralMessageParameters.REQUESTOR_REF, "REQUESTORREF"));
+			parameters.add(new BasicNameValuePair(GeneralMessageParameters.ACCOUNT_ID, "ACCOUNTID"));
+			parameters.add(new BasicNameValuePair(GeneralMessageParameters.ACCOUNT_KEY, "ACCOUNTKEY"));
+			parameters.add(new BasicNameValuePair(GeneralMessageParameters.LANGUAGE, "fr"));
+			parameters.add(new BasicNameValuePair(GeneralMessageParameters.INFO_CHANNEL_REF, "Information"));
+			parameters.add(new BasicNameValuePair(GeneralMessageParameters.INFO_CHANNEL_REF, "Perturbation"));
+			parameters.add(new BasicNameValuePair(GeneralMessageParameters.LINE_REF, "LINEREF.1"));
+			parameters.add(new BasicNameValuePair(GeneralMessageParameters.LINE_REF, "LINEREF.2"));
+			parameters.add(new BasicNameValuePair(GeneralMessageParameters.LINE_REF, "LINEREF.3"));
 
 			String url = Utils.buildURL(URL, parameters);
 			Client client = ClientBuilder.newClient();
@@ -117,37 +103,26 @@ public class GetGeneralMessageTest extends Arquillian {
 			WebTarget target = client.target(url);
 			Response response = target.request().get();
 			String value = response.readEntity(String.class);
-			Unmarshaller unmarshaller = Utils.getJaxbContext()
-					.createUnmarshaller();
+			Unmarshaller unmarshaller = Utils.getJaxbContext().createUnmarshaller();
 			Object object = unmarshaller.unmarshal(new StringReader(value));
 			response.close();
 			Assert.assertEquals(response.getStatus(), 200);
 
 			// request test
-			GeneralMessageRequestStructure request = (GeneralMessageRequestStructure) service
-					.getRequest();
+			GeneralMessageRequestStructure request = (GeneralMessageRequestStructure) service.getRequest();
 			WsServiceRequestInfoStructure serviceRequestInfo = (WsServiceRequestInfoStructure) service
 					.getServiceRequestInfo();
 			Assert.assertNotNull(serviceRequestInfo);
-			Assert.assertEquals(
-					serviceRequestInfo.getDelegatorRef().getValue(),
-					"SIRI_LITE");
+			Assert.assertEquals(serviceRequestInfo.getDelegatorRef().getValue(), "SIRI_LITE");
 			Assert.assertEquals(request.getVersion(), "2.0:FR-IDF-2.4");
-			Assert.assertEquals(request.getMessageIdentifier().getValue(),
-					"MESSAGE_IDENTIFIER");
-			Assert.assertEquals(
-					serviceRequestInfo.getRequestorRef().getValue(),
-					"REQUESTORREF");
-			Assert.assertEquals(
-					serviceRequestInfo.getDelegatorRef().getValue(),
-					"SIRI_LITE");
+			Assert.assertEquals(request.getMessageIdentifier().getValue(), "MESSAGE_IDENTIFIER");
+			Assert.assertEquals(serviceRequestInfo.getRequestorRef().getValue(), "REQUESTORREF");
+			Assert.assertEquals(serviceRequestInfo.getDelegatorRef().getValue(), "SIRI_LITE");
 			Assert.assertEquals(serviceRequestInfo.getAccountId(), "ACCOUNTID");
-			Assert.assertEquals(serviceRequestInfo.getAccountKey(),
-					"ACCOUNTKEY");
+			Assert.assertEquals(serviceRequestInfo.getAccountKey(), "ACCOUNTKEY");
 			Assert.assertNotNull(request);
 			Assert.assertEquals(request.getLanguage(), "fr");
-			List<InfoChannelRefStructure> infoChannels = request
-					.getInfoChannelRef();
+			List<InfoChannelRefStructure> infoChannels = request.getInfoChannelRef();
 			Assert.assertNotNull(infoChannels);
 			Assert.assertTrue(infoChannels.size() == 2);
 			Assert.assertEquals(infoChannels.get(0).getValue(), "Information");
@@ -173,8 +148,7 @@ public class GetGeneralMessageTest extends Arquillian {
 			Assert.assertTrue(object instanceof Siri);
 			Siri siri = (Siri) object;
 			Assert.assertNotNull(siri.getServiceDelivery());
-			Assert.assertNotNull(siri.getServiceDelivery()
-					.getGeneralMessageDelivery());
+			Assert.assertNotNull(siri.getServiceDelivery().getGeneralMessageDelivery());
 
 		} finally {
 			dispose();
@@ -183,6 +157,7 @@ public class GetGeneralMessageTest extends Arquillian {
 	}
 
 	@WebService(name = "SiriWS", targetNamespace = "http://wsdl.siri.org.uk")
+	
 	public class Service extends Server {
 
 		public Service() {
@@ -206,62 +181,47 @@ public class GetGeneralMessageTest extends Arquillian {
 
 				ObjectFactory factory = Utils.getObjectFactory();
 
-				serviceDeliveryInfo.value = factory
-						.createProducerResponseEndpointStructure();
-				answer.value = factory
-						.createGeneralMessageDeliveriesStructure();
+				serviceDeliveryInfo.value = factory.createProducerResponseEndpointStructure();
+				answer.value = factory.createGeneralMessageDeliveriesStructure();
 				answerExtension.value = factory.createExtensionsStructure();
 
-				serviceDeliveryInfo.value
-						.setResponseTimestamp(XmlStructureFactory
-								.getTimestamp());
-				ParticipantRefStructure participantRef = factory
-						.createParticipantRefStructure();
+				serviceDeliveryInfo.value.setResponseTimestamp(XmlStructureFactory.getTimestamp());
+				ParticipantRefStructure participantRef = factory.createParticipantRefStructure();
 				participantRef.setValue("PARTICIPANTREF");
 				serviceDeliveryInfo.value.setProducerRef(participantRef);
 				serviceDeliveryInfo.value.setAddress("ADDRESS");
-				MessageQualifierStructure messageQualifier = factory
-						.createMessageQualifierStructure();
+				MessageQualifierStructure messageQualifier = factory.createMessageQualifierStructure();
 				messageQualifier.setValue("MESSAGEQUALIFIER");
-				serviceDeliveryInfo.value
-						.setResponseMessageIdentifier(messageQualifier);
-				MessageRefStructure messageRef = factory
-						.createMessageRefStructure();
+				serviceDeliveryInfo.value.setResponseMessageIdentifier(messageQualifier);
+				MessageRefStructure messageRef = factory.createMessageRefStructure();
 				messageRef.setValue("MESSAGEREF");
 				serviceDeliveryInfo.value.setRequestMessageRef(messageRef);
 
-				GeneralMessageDeliveryStructure delivery = factory
-						.createGeneralMessageDeliveryStructure();
+				GeneralMessageDeliveryStructure delivery = factory.createGeneralMessageDeliveryStructure();
 				answer.value.getGeneralMessageDelivery().add(delivery);
 
-				delivery.setResponseTimestamp(XmlStructureFactory
-						.getTimestamp());
+				delivery.setResponseTimestamp(XmlStructureFactory.getTimestamp());
 				delivery.setVersion(request.getVersion());
 				delivery.setStatus(Boolean.FALSE);
 				delivery.setVersion(request.getVersion());
 
 				// set info message
-				InfoMessageStructure info = factory
-						.createInfoMessageStructure();
+				InfoMessageStructure info = factory.createInfoMessageStructure();
 				delivery.getGeneralMessage().add(info);
 				info.setFormatRef("FORMATREF");
 				info.setInfoMessageVersion(BigInteger.valueOf(1));
-				InfoChannelRefStructure value = factory
-						.createInfoChannelRefStructure();
+				InfoChannelRefStructure value = factory.createInfoChannelRefStructure();
 				value.setValue("Information");
 				info.setInfoChannelRef(value);
-				info.setRecordedAtTime(XmlStructureFactory
-						.getTimestamp(new Date()));
-				info.setValidUntilTime(XmlStructureFactory
-						.getTimestamp(new Date()));
-				InfoMessageRefStructure infoMessageIdentifier = factory
-						.createInfoMessageRefStructure();
+				info.setRecordedAtTime(XmlStructureFactory.getTimestamp(new Date()));
+				info.setValidUntilTime(XmlStructureFactory.getTimestamp(new Date()));
+				InfoMessageRefStructure infoMessageIdentifier = factory.createInfoMessageRefStructure();
 				infoMessageIdentifier.setValue("1");
 				info.setInfoMessageIdentifier(infoMessageIdentifier);
 				info.setItemIdentifier("1");
 
-				JAXBElement<IDFGeneralMessageStructure> jaxbElement = createIDFGeneralMessageStructure();
-				// info.setContent(jaxbElement);
+//				IDFGeneralMessageStructure content = createIDFGeneralMessageStructure();
+//				info.setContent(content);
 
 				delivery.getGeneralMessage().add(info);
 			} catch (Exception e) {
@@ -269,38 +229,31 @@ public class GetGeneralMessageTest extends Arquillian {
 			}
 		}
 
-		private JAXBElement<IDFGeneralMessageStructure> createIDFGeneralMessageStructure() {
-			JAXBElement<IDFGeneralMessageStructure> result = null;
+		private IDFGeneralMessageStructure createIDFGeneralMessageStructure() {
 
 			try {
 				ObjectFactory factory = Utils.getObjectFactory();
 				uk.org.siri.wsdl.siri.ObjectFactory idfFactory = new uk.org.siri.wsdl.siri.ObjectFactory();
-				IDFGeneralMessageStructure element = idfFactory
-						.createIDFGeneralMessageStructure();
+				IDFGeneralMessageStructure result = idfFactory.createIDFGeneralMessageStructure();
 
-				IDFMessageStructure idfMessage = idfFactory
-						.createIDFMessageStructure();
-				element.getMessage().add(idfMessage);
+				IDFMessageStructure idfMessage = idfFactory.createIDFMessageStructure();
+				result.getMessage().add(idfMessage);
 
-				NaturalLanguageStringStructure naturalLanguageString = factory
-						.createNaturalLanguageStringStructure();
+				NaturalLanguageStringStructure naturalLanguageString = factory.createNaturalLanguageStringStructure();
 				idfMessage.setMessageText(naturalLanguageString);
 				naturalLanguageString.setValue("TODO");
 				naturalLanguageString.setLang("fr");
 
 				LineRefStructure lineRef = factory.createLineRefStructure();
 				lineRef.setValue("1");
-				element.getLineRef().add(lineRef);
+				result.getLineRef().add(lineRef);
 
-				QName name = new QName("http://wsdl.siri.org.uk/siri",
-						"IDFGeneralMessage");
-				result = new JAXBElement<IDFGeneralMessageStructure>(name,
-						IDFGeneralMessageStructure.class, element);
+				return result;
 
 			} catch (Exception e) {
 				log.info(e.getMessage(), e);
 			}
-			return result;
+			return null;
 		}
 	}
 }

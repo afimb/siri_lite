@@ -64,7 +64,6 @@
 			<artifactId>httpcore</artifactId>
 			<scope>test</scope>
 		</dependency>
-
 		<!-- JBoss RESTEasy -->
 		<dependency>
 			<groupId>org.jboss.resteasy</groupId>
