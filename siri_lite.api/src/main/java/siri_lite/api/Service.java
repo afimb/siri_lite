@@ -17,6 +17,7 @@ import lombok.extern.log4j.Log4j;
 
 import org.jboss.resteasy.annotations.GZIP;
 
+import siri_lite.checkstatus.CheckStatusService;
 import siri_lite.discovery.LinesDiscoveryService;
 import siri_lite.discovery.StopPointsDiscoveryService;
 import siri_lite.general_message.GeneralMessageService;
@@ -30,6 +31,9 @@ import siri_lite.stop_monitoring.StopMonitoringService;
 public class Service {
 
 	@Inject
+	CheckStatusService checkStatusService;
+
+	@Inject
 	StopPointsDiscoveryService stopPointsDiscoveryService;
 
 	@Inject
@@ -40,6 +44,17 @@ public class Service {
 
 	@Inject
 	GeneralMessageService generalMessageService;
+
+	@GET
+	@Path("/checkstatus{encoding: (\\z|.json|.xml)}")
+	public void checkstatus(@Context HttpHeaders headers, @Context UriInfo uri,
+			@Suspended final AsyncResponse response) {
+		MultivaluedMap<String, String> properties = headers.getRequestHeaders();
+		properties.putAll(uri.getPathParameters());
+		properties.putAll(uri.getQueryParameters());
+		log.info("[DSU] checkstatus : " + properties);
+		checkStatusService.checkstatus(properties, response);
+	}
 
 	@GET
 	@Path("/stoppoints-discovery{encoding: (\\z|.json|.xml)}")

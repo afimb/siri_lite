@@ -316,6 +316,7 @@
 		<module>uk.org.siri.siri</module>
 		<module>uk.org.siri.wsdl</module>
 		<module>siri_lite.common</module>
+		<module>siri_lite.checkstatus</module>		
 		<module>siri_lite.discovery</module>
 		<module>siri_lite.stop_monitoring</module>
 		<module>siri_lite.general_message</module>

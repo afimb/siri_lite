@@ -2,11 +2,14 @@ package siri_lite.common;
 
 import java.util.NoSuchElementException;
 
+import lombok.extern.log4j.Log4j;
+
 import org.apache.commons.pool.BasePoolableObjectFactory;
 import org.apache.commons.pool.ObjectPool;
 import org.apache.commons.pool.PoolableObjectFactory;
 import org.apache.commons.pool.impl.GenericObjectPool;
 
+@Log4j
 public class SiriProducerDocServicesFactory {
 
 	private static GenericObjectPool<SiriProducerDocServices> instance;
@@ -17,6 +20,7 @@ public class SiriProducerDocServicesFactory {
 			ObjectPool<SiriProducerDocServices> pool = getInstance();
 			result = pool.borrowObject();
 		} catch (Exception e) {
+			log.error(e.getMessage(), e);
 			throw new NoSuchElementException();
 		}
 		return result;
