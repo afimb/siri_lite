@@ -1,6 +1,6 @@
 # siri_lite 
 
-Siri Lite is a java project that provides ta bridge between a web service Siri server and Siri lite clients with following features
+SIRI Lite is a java project that provides a bridge between a web service SIRI server and SIRI lite clients with the following features :
 
 * Uses SIRI 2.0 FR-IDF 2.4 local agreement
 * implements stop monitoring, general message, stop dicovery and line discovery services
@@ -9,17 +9,17 @@ Siri Lite is a java project that provides ta bridge between a web service Siri s
 This java project is split into modules :
 
 * siri_lite.server : **REST server (ear)**
-* uk.org.siri.siri : siri xsd mapped classes
-* uk.org.siri.wsdl : siri wsdl mapped classes
+* uk.org.siri.siri : SIRI XSD mapped classes
+* uk.org.siri.wsdl : SIRI wsdl mapped classes
 * siri_lite.common : Common classes and interfaces
 * siri_lite.discovery : Discovery services bridge implementation
-* siri_lite.stop_monitoring : Stop monitoring service bridge implementation
-* siri_lite.general_message : General message service bridge implementation
+* siri_lite.stop_monitoring : Stop Monitoring service bridge implementation
+* siri_lite.general_message : General Message service bridge implementation
 * siri_lite.api : REST API implementation
 
 ## Release Notes
 
-The release notes (in French) can be found in [CHANGELOG](./CHANGELOG.md) file 
+The release notes (in French) can be found in [CHANGELOG](./CHANGELOG.md) file.
 
 ## Requirements
  
@@ -47,7 +47,7 @@ sudo ln -s /usr/share/maven3/bin/mvn /usr/bin/mvn
 ```
 if ```apt-get update``` fails, modify file :
 /etc/apt/sources.list.d/natecarlson-maven3-trusty.list
-value ```trusty``` by ```precise``` 
+value ```trusty``` by ```precise```.
 
 ## Installation
 
@@ -75,19 +75,19 @@ mvn -DskipTests install
 ```
 
 ### Installation from binary
-download siri_lite.x.y.z.zip from [maven repository](http://maven.chouette.mobi/siri/siri_lite/siri_lite.server)
+Download siri_lite.x.y.z.zip from [maven repository](http://maven.chouette.mobi/siri/siri_lite/siri_lite.server)
 
 [Install and configure Wildfly](./doc/install/wildfly.md) 
 
-in wildfly installation repository :
+In wildfly installation repository :
 ```sh
 bin/jboss-cli.sh connect, deploy --force  (path to ...)/siri_lite.ear
 bin/jboss-cli.sh -c "/system-property=siri_lite.producer.address:add(value='web service SIRI server endpoint address')"
 ```
 
 ## Documentation
- 
-Documentation is available in french on [Chouette Project website](http://www.chouette.mobi).
+
+Documentation is available in French on [Chouette Project website](http://www.chouette.mobi).
 ## License
  
 This project is licensed under the CeCILL-B license, a copy of which can be found in the [LICENSE](./LICENSE.md) file.
