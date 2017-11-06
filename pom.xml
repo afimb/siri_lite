@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>siri</groupId>
 	<artifactId>siri_lite</artifactId>
-	<version>1.0.0</version>
+	<version>1.1.0</version>
 	<packaging>pom</packaging>
 	<repositories>
 		<repository>
@@ -319,6 +319,7 @@
 		<module>siri_lite.checkstatus</module>		
 		<module>siri_lite.discovery</module>
 		<module>siri_lite.stop_monitoring</module>
+		<module>siri_lite.vehicle_monitoring</module>
 		<module>siri_lite.general_message</module>
 		<module>siri_lite.api</module>
 		<module>siri_lite.server</module>

@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>siri</groupId>
 		<artifactId>siri_lite</artifactId>
-		<version>1.0.0</version>
+		<version>1.1.0</version>
 	</parent>
 	<artifactId>siri_lite.api</artifactId>
 	<packaging>war</packaging>
@@ -90,8 +90,15 @@
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>siri_lite.general_message</artifactId>
-			<type>jar</type>
 			<version>${project.version}</version>
+			<type>jar</type>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>siri_lite.vehicle_monitoring</artifactId>
+			<version>${project.version}</version>
+			<type>jar</type>
 			<scope>provided</scope>
 		</dependency>
 	</dependencies>

@@ -13,7 +13,6 @@ import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import lombok.extern.log4j.Log4j;
 import uk.org.siri.siri.AdviceRefStructure;
 import uk.org.siri.siri.AnnotatedStopPointStructure.Lines;
 import uk.org.siri.siri.BlockRefStructure;
@@ -78,7 +77,6 @@ import com.fasterxml.jackson.module.jaxb.JaxbAnnotationIntrospector;
 
 @Provider
 @Produces(MediaType.APPLICATION_JSON)
-@Log4j
 public class JAXBSerializer implements MessageBodyWriter<Siri> {
 
 	private static final Class<?>[] classes = { AdviceRefStructure.class,
@@ -109,18 +107,21 @@ public class JAXBSerializer implements MessageBodyWriter<Siri> {
 			VehicleMonitoringRefStructure.class, VehicleRefStructure.class,
 			VersionRefStructure.class, ZoneRefStructure.class, };
 
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
 	public boolean isWriteable(Class type, Type generic,
 			Annotation[] annotations, MediaType media) {
 		return type.isAnnotationPresent(XmlRootElement.class);
 	}
 
+	@SuppressWarnings("rawtypes")
 	@Override
 	public long getSize(Siri target, Class type, Type generic,
 			Annotation[] annotations, MediaType media) {
 		return -1;
 	}
 
+	@SuppressWarnings("rawtypes")
 	@Override
 	public void writeTo(Siri target, Class type, Type generic,
 			Annotation[] annotations, MediaType media, MultivaluedMap headers,
@@ -129,6 +130,7 @@ public class JAXBSerializer implements MessageBodyWriter<Siri> {
 				out);
 	}
 
+	@SuppressWarnings("rawtypes")
 	private void writeToWithJackson(Siri target, Class type, Type generic,
 			Annotation[] annotations, MediaType media, MultivaluedMap headers,
 			OutputStream out) throws IOException, WebApplicationException {

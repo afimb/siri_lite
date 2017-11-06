@@ -3,7 +3,6 @@ package siri_lite.common;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.lang.reflect.ParameterizedType;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
 import javax.ws.rs.client.InvocationCallback;

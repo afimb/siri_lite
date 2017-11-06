@@ -10,8 +10,6 @@ import javax.ws.rs.core.Response.Status;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.namespace.QName;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.soap.SOAPException;
 
 import lombok.extern.log4j.Log4j;
 import siri_lite.common.Color;

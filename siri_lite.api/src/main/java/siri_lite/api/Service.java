@@ -22,6 +22,7 @@ import siri_lite.discovery.LinesDiscoveryService;
 import siri_lite.discovery.StopPointsDiscoveryService;
 import siri_lite.general_message.GeneralMessageService;
 import siri_lite.stop_monitoring.StopMonitoringService;
+import siri_lite.vehicle_monitoring.VehicleMonitoringService;
 
 @Path("/2.0.0")
 @RequestScoped
@@ -41,6 +42,9 @@ public class Service {
 
 	@Inject
 	StopMonitoringService stopMonitoringService;
+
+	@Inject
+	VehicleMonitoringService vehicleMonitoringService;
 
 	@Inject
 	GeneralMessageService generalMessageService;
@@ -87,6 +91,17 @@ public class Service {
 		properties.putAll(uri.getQueryParameters());
 		log.info("[DSU] stop-monitoring : " + properties);
 		stopMonitoringService.getStopMonitoring(properties, response);
+	}
+	
+	@GET
+	@Path("/vehicle-monitoring{encoding: (\\z|.json|.xml)}")
+	public void getVehicleMonitoring(@Context HttpHeaders headers,
+			@Context UriInfo uri, @Suspended final AsyncResponse response) {
+		MultivaluedMap<String, String> properties = headers.getRequestHeaders();
+		properties.putAll(uri.getPathParameters());
+		properties.putAll(uri.getQueryParameters());
+		log.info("[DSU] vehicle-monitoring : " + properties);
+		vehicleMonitoringService.getVehicleMonitoring(properties, response);
 	}
 
 	@GET
