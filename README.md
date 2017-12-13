@@ -3,7 +3,7 @@
 SIRI Lite is a java project that provides a bridge between a web service SIRI server and SIRI lite clients with the following features :
 
 * Uses SIRI 2.0 FR-IDF 2.4 local agreement
-* implements stop monitoring, general message, stop dicovery and line discovery services
+* implements stop monitoring, vehicle monitoring, general message, stop dicovery and line discovery services
 
 
 This java project is split into modules :
@@ -15,6 +15,7 @@ This java project is split into modules :
 * siri_lite.discovery : Discovery services bridge implementation
 * siri_lite.stop_monitoring : Stop Monitoring service bridge implementation
 * siri_lite.general_message : General Message service bridge implementation
+* siri_lite.vehicle_monitoring : Vehicle Monitoring service bridge implementation
 * siri_lite.api : REST API implementation
 
 ## Release Notes
@@ -29,6 +30,7 @@ This code has been run and tested on [Travis](http://travis-ci.org/afimb/chouett
 * openjdk7
 * openjdk8
 * wildfly 8.2.0
+* wildfly 9.2.0
 
 ## External Deps
 
@@ -55,7 +57,7 @@ value ```trusty``` by ```precise```.
 
 Get git repository :
 ```sh
-git clone -b V1_0 git://github.com/afimb/siri_lite
+git clone -b V1_1 git://github.com/afimb/siri_lite
 cd siri_lite
 ```
 
@@ -88,6 +90,7 @@ bin/jboss-cli.sh -c "/system-property=siri_lite.producer.address:add(value='web 
 ## Documentation
 
 Documentation is available in French on [Chouette Project website](http://www.chouette.mobi).
+
 ## License
  
 This project is licensed under the CeCILL-B license, a copy of which can be found in the [LICENSE](./LICENSE.md) file.

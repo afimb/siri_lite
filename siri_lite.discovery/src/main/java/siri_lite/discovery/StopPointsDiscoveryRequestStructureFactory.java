@@ -8,7 +8,6 @@ import uk.org.siri.siri.LocationStructure;
 import uk.org.siri.siri.ParticipantRefStructure;
 import uk.org.siri.siri.StopPointsDiscoveryRequestStructure;
 
-@SuppressWarnings("rawtypes")
 public class StopPointsDiscoveryRequestStructureFactory
 		extends
 		RequestStructureFactory<StopPointsDiscoveryRequestStructure, StopPointsDiscoveryParameters> {

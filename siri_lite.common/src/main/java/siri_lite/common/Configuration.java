@@ -15,6 +15,7 @@ public class Configuration {
 	public static final String STOPS_DISCOVERY_MAX_AGE = "siri_lite.stops_discovery.max_age";
 	public static final String LINES_DISCOVERY_MAX_AGE = "siri_lite.lines_discovery.max_age";
 	public static final String STOP_MONITORING_MAX_AGE = "siri_lite.stop_monitoring.max_age";
+	public static final String VEHICLE_MONITORING_MAX_AGE = "siri_lite.vehicle_monitoring.max_age";
 	public static final String GENERAL_MESSAGE_MAX_AGE = "siri_lite.general_message.max_age";
 
 	private static Configuration instance;
@@ -115,5 +116,14 @@ public class Configuration {
 
 	private String getProperty(String key) {
 		return System.getProperty(key);
+	}
+
+	public Integer getVehicleMonitoringMaxAge() {
+		int result = 60;
+		String value = getProperty(VEHICLE_MONITORING_MAX_AGE);
+		if (value != null && !value.isEmpty()) {
+			result = Integer.valueOf(value);
+		}
+		return result;
 	}
 }

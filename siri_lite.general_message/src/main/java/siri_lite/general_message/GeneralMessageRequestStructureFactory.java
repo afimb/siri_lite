@@ -15,7 +15,6 @@ import uk.org.siri.siri.RouteRefStructure;
 import uk.org.siri.siri.StopPointRefStructure;
 import uk.org.siri.wsdl.siri.IDFGeneralMessageRequestFilterStructure;
 
-@SuppressWarnings("rawtypes")
 public class GeneralMessageRequestStructureFactory extends
 		RequestStructureFactory<GeneralMessageRequestStructure, GeneralMessageParameters> {
 

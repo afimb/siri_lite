@@ -1,4 +1,4 @@
-package siri_lite.stop_monitoring;
+package siri_lite.vehicle_monitoring;
 
 import java.util.NoSuchElementException;
 
@@ -26,8 +26,8 @@ import uk.org.siri.siri.ParticipantRefStructure;
 import uk.org.siri.siri.ProducerResponseEndpointStructure;
 import uk.org.siri.siri.ServiceDelivery;
 import uk.org.siri.siri.Siri;
-import uk.org.siri.siri.StopMonitoringRequestStructure;
-import uk.org.siri.wsdl.StopMonitoringAnswerStructure;
+import uk.org.siri.siri.VehicleMonitoringRequestStructure;
+import uk.org.siri.wsdl.VehicleMonitoringAnswerStructure;
 import uk.org.siri.wsdl.WsServiceRequestInfoStructure;
 
 import com.jamonapi.Monitor;
@@ -35,23 +35,21 @@ import com.jamonapi.MonitorFactory;
 
 @Log4j
 @Stateless
-public class StopMonitoringService {
+public class VehicleMonitoringService {
 
 	private static ObjectFactory factory = new ObjectFactory();
 	private static uk.org.siri.wsdl.ObjectFactory wsFactory = new uk.org.siri.wsdl.ObjectFactory();
 
-	public void getStopMonitoring(MultivaluedMap<String, String> properties,
-			AsyncResponse response) {
+	public void getVehicleMonitoring(MultivaluedMap<String, String> properties, AsyncResponse response) {
 
-		Monitor monitor = MonitorFactory
-				.start("StopMonitoringService.getStopMonitoring()");
+		Monitor monitor = MonitorFactory.start("VehicleMonitoringService.getVehicleMonitoring()");
 
 		SiriProducerDocServices service = null;
 		try {
 			Configuration configuration = Configuration.getInstance();
 
 			// validate parameters
-			StopMonitoringParameters parameters = new StopMonitoringParameters();
+			VehicleMonitoringParameters parameters = new VehicleMonitoringParameters();
 			parameters.configure(properties);
 			parameters.validate();
 
@@ -63,16 +61,14 @@ public class StopMonitoringService {
 			requestInfo.setMessageIdentifier(parameters.getMessageIdentifier());
 
 			// RequestorRef
-			ParticipantRefStructure requestorRef = SiriStructureFactory
-					.createParticipantRef(parameters.getRequestorRef(), null);
+			ParticipantRefStructure requestorRef = SiriStructureFactory.createParticipantRef(parameters.getRequestorRef(),
+					null);
 			requestInfo.setRequestorRef(requestorRef);
 
 			// DelegatorRef
-			if (configuration.getDelegatorRef() != null
-					&& !configuration.getDelegatorRef().isEmpty()) {
-				ParticipantRefStructure delegatorRef = SiriStructureFactory
-						.createParticipantRef(configuration.getDelegatorRef(),
-								null);
+			if (configuration.getDelegatorRef() != null && !configuration.getDelegatorRef().isEmpty()) {
+				ParticipantRefStructure delegatorRef = SiriStructureFactory.createParticipantRef(configuration
+						.getDelegatorRef(), null);
 				requestInfo.setDelegatorRef(delegatorRef);
 			}
 
@@ -82,33 +78,28 @@ public class StopMonitoringService {
 			// AccountKey
 			requestInfo.setAccountKey(parameters.getAccountKey());
 
-			StopMonitoringRequestStructure request = RequestStructureFactory
-					.create(StopMonitoringRequestStructure.class,
-							configuration, parameters);
-			ExtensionsStructure requestExtension = factory
-					.createExtensionsStructure();
+			VehicleMonitoringRequestStructure request = RequestStructureFactory.create(
+					VehicleMonitoringRequestStructure.class, configuration, parameters);
+			ExtensionsStructure requestExtension = factory.createExtensionsStructure();
 
-			uk.org.siri.wsdl.StopMonitoringRequestStructure wsRequest = wsFactory
-					.createStopMonitoringRequestStructure();
+			uk.org.siri.wsdl.VehicleMonitoringRequestStructure wsRequest = wsFactory
+					.createVehicleMonitoringRequestStructure();
 			wsRequest.setServiceRequestInfo(requestInfo);
 			wsRequest.setRequest(request);
 			wsRequest.setRequestExtension(requestExtension);
 
-			JAXBElement<uk.org.siri.wsdl.StopMonitoringRequestStructure> jaxbElement = new JAXBElement<uk.org.siri.wsdl.StopMonitoringRequestStructure>(
-					new QName("http://wsdl.siri.org.uk", "GetStopMonitoring"),
-					uk.org.siri.wsdl.StopMonitoringRequestStructure.class,
-					wsRequest);
+			JAXBElement<uk.org.siri.wsdl.VehicleMonitoringRequestStructure> jaxbElement = new JAXBElement<uk.org.siri.wsdl.VehicleMonitoringRequestStructure>(
+					new QName("http://wsdl.siri.org.uk", "GetVehicleMonitoring"),
+					uk.org.siri.wsdl.VehicleMonitoringRequestStructure.class, wsRequest);
 
 			// invoke web service
 			service = SiriProducerDocServicesFactory.make();
-			StopMonitoringHandler handler = new StopMonitoringHandler(
-					configuration, parameters, response);
+			VehicleMonitoringHandler handler = new VehicleMonitoringHandler(configuration, parameters, response);
 			handler.setService(service);
 			service.invoke(jaxbElement, handler, parameters);
 		} catch (NoSuchElementException e) {
 			log.error(e.getMessage(), e);
-			Response payload = Response.status(Status.SERVICE_UNAVAILABLE)
-					.build();
+			Response payload = Response.status(Status.SERVICE_UNAVAILABLE).build();
 			response.resume(payload);
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
@@ -123,34 +114,30 @@ public class StopMonitoringService {
 		log.info(Color.GREEN + "[DSU] " + monitor.stop() + Color.NORMAL);
 	}
 
-	class StopMonitoringHandler extends
-			DefaultAsyncHandler<StopMonitoringAnswerStructure> {
+	class VehicleMonitoringHandler extends DefaultAsyncHandler<VehicleMonitoringAnswerStructure> {
 
-		public StopMonitoringHandler(Configuration configuration,
-				DefaultParameters parameters, AsyncResponse response) throws JAXBException {
+		public VehicleMonitoringHandler(Configuration configuration, DefaultParameters parameters, AsyncResponse response)
+				throws JAXBException {
 			super(configuration, parameters, response);
 		}
 
 		@Override
-		public void handleResponse(StopMonitoringAnswerStructure response) {
+		public void handleResponse(VehicleMonitoringAnswerStructure response) {
 
 			// initialize siri stucture
 			Siri siri = factory.createSiri();
 			ServiceDelivery delivery = factory.createServiceDelivery();
-			ProducerResponseEndpointStructure responseInfo = response
-					.getServiceDeliveryInfo();
+			ProducerResponseEndpointStructure responseInfo = response.getServiceDeliveryInfo();
 			delivery.setResponseTimestamp(responseInfo.getResponseTimestamp());
 			delivery.setProducerRef(responseInfo.getProducerRef());
 			delivery.setAddress(responseInfo.getAddress());
-			delivery.setResponseMessageIdentifier(responseInfo
-					.getResponseMessageIdentifier());
+			delivery.setResponseMessageIdentifier(responseInfo.getResponseMessageIdentifier());
 			delivery.setRequestMessageRef(responseInfo.getRequestMessageRef());
-			delivery.getStopMonitoringDelivery().addAll(
-					response.getAnswer().getStopMonitoringDelivery());
+			delivery.getVehicleMonitoringDelivery().addAll(response.getAnswer().getVehicleMonitoringDelivery());
 			siri.setServiceDelivery(delivery);
 
 			// resume
-			resume(siri, configuration.getStopMonitoringMaxAge());
+			resume(siri, configuration.getVehicleMonitoringMaxAge());
 		}
 	}
 
