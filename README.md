@@ -14,8 +14,8 @@ This java project is split into modules :
 * siri_lite.common : Common classes and interfaces
 * siri_lite.discovery : Discovery services bridge implementation
 * siri_lite.stop_monitoring : Stop Monitoring service bridge implementation
-* siri_lite.general_message : General Message service bridge implementation
 * siri_lite.vehicle_monitoring : Vehicle Monitoring service bridge implementation
+* siri_lite.general_message : General Message service bridge implementation
 * siri_lite.api : REST API implementation
 
 ## Release Notes
